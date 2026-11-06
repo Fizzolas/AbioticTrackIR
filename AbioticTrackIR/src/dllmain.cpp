@@ -115,6 +115,12 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
     case DLL_PROCESS_DETACH:
         if (lpvReserved == NULL) // Dynamic unload
         {
+            if (g_initThread)
+            {
+                WaitForSingleObject(g_initThread, 1000);
+                CloseHandle(g_initThread);
+                g_initThread = NULL;
+            }
             HookManager::Instance().Shutdown();
             g_receiver.Stop();
             VersionProxy::Shutdown();

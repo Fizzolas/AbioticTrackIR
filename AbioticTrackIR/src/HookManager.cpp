@@ -189,6 +189,7 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
     if (!thisCameraManager || !m_receiver || !m_engine) return;
 
     uintptr_t baseAddr = (uintptr_t)thisCameraManager;
+    if (baseAddr < 0x10000 || baseAddr > 0x00007FFFFFFFFFFFULL) return;
 
     // In Unreal Engine 5.4 APlayerCameraManager:
     // CameraCachePrivate is an FCameraCacheEntry at offset 0x13a0.
@@ -265,6 +266,8 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
 
     // Check if player is interacting with inventory, crafting, or terminal menus
     uintptr_t pcPtr = *(uintptr_t*)(baseAddr + 0x298); // PCOwner (APlayerController*)
+    if (pcPtr < 0x10000 || pcPtr > 0x00007FFFFFFFFFFFULL) pcPtr = 0;
+
     if (pcPtr && config.PauseInMenus)
     {
         // bShowMouseCursor in APlayerController is at offset +0x54c (bit 0)
@@ -272,7 +275,9 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
         bool cursorVisible = (cursorFlags & 0x01) != 0;
         if (cursorVisible)
         {
-            // Do not alter view or control rotation while menu cursor is active
+            // Do not alter view or control rotation while menu cursor is active; align frustum straight
+            if (cacheValid) { povCache->OffCenterProjectionOffset = {0.0, 0.0}; }
+            if (vtValid)    { povVT->OffCenterProjectionOffset = {0.0, 0.0}; }
             m_aimCoupledInitialized = false;
             return;
         }

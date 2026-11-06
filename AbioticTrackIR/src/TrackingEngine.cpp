@@ -53,21 +53,24 @@ void TrackingEngine::SetFreelook(bool active)
 
 FVector3d TrackingEngine::ComputeNeckDisplacement(double pitchDeg, double yawDeg, double rollDeg)
 {
-    // Anthropomorphic neck model
-    // Eyes are displaced when rotating about the cervical spine
+    // Anthropomorphic cervical spine neck model
+    // Rigid body kinematic displacement of eyes relative to neck rotation joint:
+    // dx = distance from cervical joint to eyes along forward axis (typically ~8 cm)
+    // dz = distance from cervical joint to eyes along vertical axis (typically ~12 cm)
     double p = DEG_TO_RAD(pitchDeg);
     double y = DEG_TO_RAD(yawDeg);
 
-    double fwd = m_config.NeckPivotForwardCm; // typically -8.0 cm (behind eyes)
-    double up  = m_config.NeckPivotUpCm;      // typically -12.0 cm (below eyes)
+    double dx = std::abs(m_config.NeckPivotForwardCm);
+    double dz = std::abs(m_config.NeckPivotUpCm);
 
-    // Vector from neck joint to eyes is (-fwd, 0, -up)
-    // Eye displacement = R * eye_vec - eye_vec
-    double dx = -up * std::sin(p) + fwd * (std::cos(p) * std::cos(y) - 1.0);
-    double dy = -fwd * std::sin(y);
-    double dz = up * (std::cos(p) - 1.0) + fwd * std::sin(p);
+    // When looking UP (p > 0 in UE): eyes rotate backward (-X) and upward (+Z)
+    // When looking DOWN (p < 0 in UE): eyes rotate forward (+X) and downward (-Z)
+    // When turning RIGHT (y > 0 in UE): eyes swing to the right (+Y) and slightly back (-X)
+    double dispX = dx * (std::cos(p) * std::cos(y) - 1.0) - dz * std::sin(p);
+    double dispY = dx * std::sin(y);
+    double dispZ = dx * std::sin(p) + dz * (std::cos(p) - 1.0);
 
-    return {dx, dy, dz};
+    return {dispX, dispY, dispZ};
 }
 
 ProcessedTrackingState TrackingEngine::Process(const RawTrackingPose& rawPose, float baseGameFOV, float deltaTime)
@@ -84,18 +87,19 @@ ProcessedTrackingState TrackingEngine::Process(const RawTrackingPose& rawPose, f
         return state;
     }
 
-    // 1. Recenter baseline capture
+    // 1. Recenter baseline capture (instant zero-calibration)
     if (!m_hasCenter)
     {
         m_centerOffset = rawPose;
-        m_filteredPose = rawPose;
+        m_filteredPose = RawTrackingPose{}; // Cleanly reset smoothed pose to zero
+        m_filteredPose.IsValid = true;
         m_hasCenter = true;
     }
 
-    // 2. Subtract center offset
-    double rawYaw   = rawPose.Yaw   - m_centerOffset.Yaw;
-    double rawPitch = rawPose.Pitch - m_centerOffset.Pitch;
-    double rawRoll  = rawPose.Roll  - m_centerOffset.Roll;
+    // 2. Subtract center offset and normalize angular deltas
+    double rawYaw   = FRotator3d::NormalizeAxis(rawPose.Yaw   - m_centerOffset.Yaw);
+    double rawPitch = FRotator3d::NormalizeAxis(rawPose.Pitch - m_centerOffset.Pitch);
+    double rawRoll  = FRotator3d::NormalizeAxis(rawPose.Roll  - m_centerOffset.Roll);
     double rawX     = rawPose.X     - m_centerOffset.X;
     double rawY     = rawPose.Y     - m_centerOffset.Y;
     double rawZ     = rawPose.Z     - m_centerOffset.Z;
@@ -181,7 +185,14 @@ ProcessedTrackingState TrackingEngine::Process(const RawTrackingPose& rawPose, f
 
 void TrackingEngine::ApplyToViewInfo(FMinimalViewInfo* pov, const ProcessedTrackingState& state, double actorBaseYawDeg, bool applyRotation)
 {
-    if (!pov || !state.IsTrackingActive) return;
+    if (!pov) return;
+
+    if (!state.IsTrackingActive)
+    {
+        pov->OffCenterProjectionOffset.X = 0.0;
+        pov->OffCenterProjectionOffset.Y = 0.0;
+        return;
+    }
 
     // 1. Add Rotations to camera rotation
     if (applyRotation)
@@ -224,5 +235,10 @@ void TrackingEngine::ApplyToViewInfo(FMinimalViewInfo* pov, const ProcessedTrack
         {
             pov->FOV = state.Parallax.AdjustedFOV;
         }
+    }
+    else
+    {
+        pov->OffCenterProjectionOffset.X = 0.0;
+        pov->OffCenterProjectionOffset.Y = 0.0;
     }
 }
