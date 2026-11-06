@@ -59,7 +59,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::cout << "[INFO] Tracking receiver started. Press 'C' to center, 'P' to toggle Parallax, 'Q' to quit.\n\n";
+    std::cout << "[INFO] Tracking receiver started. Press 'C' to center, 'P' to toggle Parallax, '+/-' for focal depth, 'Q' to quit.\n\n";
 
     auto lastRefresh = std::chrono::steady_clock::now();
 
@@ -79,6 +79,16 @@ int main(int argc, char** argv)
             {
                 engine.ToggleParallax();
                 std::cout << "\n>>> Parallax 3D: " << (engine.GetConfig().Parallax3DEnabled ? "ENABLED" : "DISABLED") << " <<<\n";
+            }
+            if (ch == '+' || ch == '=')
+            {
+                engine.AdjustFocalDepth(+15.0);
+                std::cout << "\n>>> Parallax Focal Depth: " << engine.GetFocalDepth() << " cm <<<\n";
+            }
+            if (ch == '-' || ch == '_')
+            {
+                engine.AdjustFocalDepth(-15.0);
+                std::cout << "\n>>> Parallax Focal Depth: " << engine.GetFocalDepth() << " cm <<<\n";
             }
             if (ch == 't' || ch == 'T')
             {
@@ -123,11 +133,12 @@ int main(int argc, char** argv)
             std::cout << "  Vertical(U/D) : " << std::setw(6) << proc.LocalTranslation.Z << " cm "; PrintProgressBar(proc.LocalTranslation.Z, -10.0, 10.0); std::cout << "\n\n";
 
             std::cout << "PARALLAX 3D ENGINE: \n";
+            std::cout << "  Focal Depth     : " << std::setw(6) << proc.Parallax.CurrentFocalDepth << " cm [Convergence Distance]\n";
             std::cout << "  Frustum Shear X : " << std::setw(6) << proc.Parallax.ProjectionOffset.X << " [L/R Projection Plane Offset]\n";
             std::cout << "  Frustum Shear Y : " << std::setw(6) << proc.Parallax.ProjectionOffset.Y << " [U/D Projection Plane Offset]\n";
             std::cout << "  Dynamic Depth FOV: " << std::setw(6) << proc.Parallax.AdjustedFOV << " deg (Base 90.0)\n\n";
 
-            std::cout << "CONTROLS: [C] Recenter | [T] Toggle Tracking | [P] Toggle Parallax | [S] Save Config | [Q] Quit\n";
+            std::cout << "CONTROLS: [C] Center | [T] Track | [P] Parallax | [+] Depth+ | [-] Depth- | [S] Save | [Q] Quit\n";
             std::cout << std::flush;
         }
 

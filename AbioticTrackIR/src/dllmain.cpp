@@ -93,7 +93,7 @@ static DWORD WINAPI InitThread(LPVOID lpParam)
             snprintf(addrBuf, sizeof(addrBuf), "0x%llX", (unsigned long long)HookManager::Instance().GetTargetAddress());
             LogMessage(std::string("SUCCESS: Hook installed at ") + addrBuf + " (Attempt " + std::to_string(attempt) + ")");
             LogMessage("TrackIR / OpenTrack 6-DOF & Parallax 3D active!");
-            LogMessage("Hotkeys: F12 = Recenter | F11 = Toggle Tracking | F10 = Toggle Parallax 3D | Alt = Free-look");
+            LogMessage("Hotkeys: F12=Recenter | F11=Toggle Tracking | F10=Toggle Parallax 3D | F9=Depth+ | F8=Depth- | Alt=Free-look");
             break;
         }
         Sleep(1000);

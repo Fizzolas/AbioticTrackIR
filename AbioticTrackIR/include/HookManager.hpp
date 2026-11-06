@@ -37,6 +37,8 @@ private:
     bool m_centerKeyWasDown{false};
     bool m_trackingKeyWasDown{false};
     bool m_parallaxKeyWasDown{false};
+    bool m_depthIncKeyWasDown{false};
+    bool m_depthDecKeyWasDown{false};
 
     // Frame-to-frame delta state for Aim Coupling (prevents infinite angular spin)
     double m_lastCoupledPitch{0.0};

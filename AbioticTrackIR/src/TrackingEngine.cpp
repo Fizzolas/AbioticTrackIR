@@ -45,6 +45,21 @@ void TrackingEngine::ToggleParallax()
     m_config.Parallax3DEnabled = !m_config.Parallax3DEnabled;
 }
 
+void TrackingEngine::AdjustFocalDepth(double deltaCm)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    double cur = m_parallaxEngine.GetFocalDistance();
+    double updated = std::clamp(cur + deltaCm, 30.0, 500.0);
+    m_parallaxEngine.SetFocalDistance(updated);
+    m_config.Monitor.FocalDistanceCm = updated;
+}
+
+double TrackingEngine::GetFocalDepth() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_parallaxEngine.GetFocalDistance();
+}
+
 void TrackingEngine::SetFreelook(bool active)
 {
     std::lock_guard<std::mutex> lock(m_mutex);

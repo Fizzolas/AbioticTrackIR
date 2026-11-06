@@ -73,7 +73,9 @@ echo 2. Launch Abiotic Factor.
 echo 3. Controls:
 echo    - F12: Recenter View
 echo    - F11: Toggle Head Tracking
-echo    - F10: Toggle Parallax 3D
+echo    - F10: Toggle Parallax 3D Window Mode
+echo    - F9:  Increase Focal Depth (+15 cm deeper into screen)
+echo    - F8:  Decrease Focal Depth (-15 cm closer to viewer)
 echo    - Left Alt: Hold for Free-Look
 echo ======================================================================
 echo.

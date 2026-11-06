@@ -23,10 +23,11 @@ In addition to full rotational and translational tracking, this mod features an 
 * **Enhanced Situational Awareness:** Freely scan facility corridors, look up into ceiling vents, and check corners without pulling your gun barrel or weapon crosshair off your target.
 * **Free-Look Hotkey:** Hold **Left Alt** (configurable) to freely glance around independently of your scientist's body motion.
 
-### 3. Parallax 3D Frustum Engine (The Holographic Illusion)
-By coupling your real-world eye coordinates with Unreal Engine 5's projection matrix:
-* **Off-Axis Frustum Shear:** As your head shifts, the projection frustum shears inversely. Foreground objects (weapon viewmodel, desk corners, railing edges) exhibit stereoscopic motion parallax against background walls on standard 2D displays.
-* **Dynamic Focal Distance / FOV:** Leaning closer to the screen naturally widens your optical field of view, matching the visual geometry of looking through a physical glass aperture.
+### 3. Holographic Parallax 3D Window (Johnny Lee / Desktop VR Mode)
+* **Real Depth on Normal 2D Monitors:** Inspired by Johnny Chung Lee's classic desktop VR head tracking and modern holographic displays, your monitor acts like a physical glass window looking into the GATE Cascade Research Facility.
+* **Convergence Depth Plane ($D_{\text{focal}}$):** As your head moves laterally or vertically, physical camera translation and off-axis frustum shearing cancel out at the configured focal depth ($120\text{ cm}$ default). Objects at this depth stay anchored to your physical monitor glass.
+* **Natural Motion Parallax:** Moving your head peeks around doorways and reveals occluded background hallways, while viewmodels and held items pop forward into the room.
+* **Tailored for OpenTrack Face Tracking (Optional for TrackIR):** Specifically designed for OpenTrack users using webcam face trackers (*neuralnet*). Press **F10** to toggle in-game, and dynamically adjust your focal convergence depth using **F9** (deeper into screen) and **F8** (closer to viewer). TrackIR / IR clip users can leave it disabled for pure, nausea-free 6-DOF head-look.
 
 ### 4. Dynamic ADS & Sniper Zoom Dampening
 When aiming down sights (ADS) with magnified weaponry, tracking sensitivity automatically dampens proportionally to the active optical FOV, ensuring jitter-free precision for long-range engagements.
@@ -57,7 +58,9 @@ Includes `AbioticTrackIR-Bridge.exe`, a standalone diagnostic utility that visua
 | :--- | :--- | :--- |
 | **F12** | **Recenter View** | Instantly zeroes current head posture as the center forward view. |
 | **F11** | **Toggle Tracking** | Enables or disables head tracking on the fly. |
-| **F10** | **Toggle Parallax 3D** | Toggles off-axis asymmetrical perspective frustum. |
+| **F10** | **Toggle Parallax 3D** | Toggles holographic off-axis perspective window mode. |
+| **F9** | **Focal Depth +** | Increases parallax convergence depth (+15 cm deeper into screen). |
+| **F8** | **Focal Depth -** | Decreases parallax convergence depth (-15 cm closer to viewer). |
 | **Left Alt** | **Free-Look** | Hold to freely look around decoupled from character body heading. |
 
 *(All hotkeys are fully customizable in `AbioticTrackIR.ini`)*
@@ -76,6 +79,7 @@ Includes `AbioticTrackIR-Bridge.exe`, a standalone diagnostic utility that visua
 4. Click **Start** in OpenTrack.
 5. Launch **Abiotic Factor**!
 6. Sit comfortably in your natural playing posture and press **F12** to calibrate your center view.
+7. *(Optional for OpenTrack face tracking)*: Press **F10** to activate Parallax 3D, and fine-tune depth with **F9** / **F8**.
 
 ---
 
@@ -150,9 +154,11 @@ PivotForwardCm = -1.5
 PivotUpCm = -2.0
 
 [Parallax3D]
-; Off-axis perspective projection for depth illusion (disabled by default for comfortable, nausea-free play)
-; Can be toggled on/off in-game anytime by pressing F10
+; Holographic off-axis perspective projection (Johnny Lee desktop VR window effect)
+; Anchors convergence to the physical monitor glass. Designed for OpenTrack face tracking.
+; Toggle in-game with F10. Tune depth plane with F9 (deeper) and F8 (closer).
 Enabled = false
+FocalDistanceCm = 120.0    ; Convergence depth (cm): objects at this depth remain anchored to the monitor
 ; Monitor display dimensions in centimeters (measure physical panel width & height):
 ; 24": 53.1 x 29.9 | 27": 59.7 x 33.6 | 32": 69.8 x 39.3 | 34" UW: 79.8 x 33.4
 MonitorWidthCm = 59.7
@@ -163,10 +169,13 @@ DynamicFOV = false         ; Disabled by default to prevent disorienting dolly-z
 MaxOffsetFrustum = 0.15    ; Edge distortion safety clamp
 
 [Hotkeys]
+; Simplified F-keys: F12=Recenter, F11=Toggle Tracking, F10=Toggle Parallax, F9=Depth+, F8=Depth-
 ; Available keys: VK_F1..VK_F12, LeftAlt, LeftCtrl, LeftShift, MiddleMouse, Mouse4, Mouse5
 Center = VK_F12
 ToggleTracking = VK_F11
 ToggleParallax = VK_F10
+ParallaxDepthInc = VK_F9
+ParallaxDepthDec = VK_F8
 Freelook = VK_LMENU
 ```
 

@@ -4,14 +4,15 @@
 
 struct MonitorConfig
 {
-    double WidthCm{59.7};          // 27" 16:9 screen = ~59.7 cm wide
-    double HeightCm{33.6};         // 27" 16:9 screen = ~33.6 cm high
-    double ViewingDistanceCm{65.0}; // Typical desk distance = 65 cm
-    double ParallaxIntensity{0.10}; // Subtle frustum shear multiplier (calibrated to eliminate nausea)
-    bool DynamicFOV{false};         // Disabled by default to prevent disorienting dolly-zoom vertigo
-    double MaxOffsetFrustum{0.15};  // Gentle clamping to prevent edge distortion
-    bool InvertParallaxX{false};    // Invert horizontal frustum shear
-    bool InvertParallaxY{false};    // Invert vertical frustum shear
+    double WidthCm{59.7};           // 27" 16:9 screen = ~59.7 cm wide
+    double HeightCm{33.6};          // 27" 16:9 screen = ~33.6 cm high
+    double ViewingDistanceCm{65.0};  // Distance from eyes to monitor surface (cm)
+    double FocalDistanceCm{120.0};   // Convergence focal depth (cm) - objects at this depth remain anchored to screen
+    double ParallaxIntensity{1.0};   // Parallax depth intensity multiplier
+    bool DynamicFOV{false};          // Keep false for stable, comfortable perspective
+    double MaxOffsetFrustum{0.30};   // Safety clamp on off-axis frustum shear
+    bool InvertParallaxX{false};     // Invert horizontal frustum shear
+    bool InvertParallaxY{false};     // Invert vertical frustum shear
 };
 
 struct ParallaxResult
@@ -19,6 +20,7 @@ struct ParallaxResult
     FVector2d ProjectionOffset;   // Frustum shear (X, Y)
     float AdjustedFOV;            // Dynamic FOV in degrees
     FVector3d CameraShiftLocal;   // Camera physical shift in local space (cm)
+    double CurrentFocalDepth{120.0};
     bool IsActive{true};
 };
 
@@ -30,13 +32,15 @@ public:
     void SetConfig(const MonitorConfig& config);
     const MonitorConfig& GetConfig() const;
 
-    // Calculates off-axis frustum projection and dynamic depth perspective
-    // headLateral_cm: Left (-)/Right (+)
-    // headVertical_cm: Down (-)/Up (+)
-    // headDepth_cm: Away (-)/Towards screen (+)
+    void SetFocalDistance(double focalDistCm);
+    double GetFocalDistance() const { return m_config.FocalDistanceCm; }
+
+    // Calculates true Johnny Lee-style off-axis perspective projection anchored at FocalDistanceCm
     ParallaxResult CalculateParallax(double headLateral_cm, double headVertical_cm, double headDepth_cm,
                                      float baseGameFOV);
 
 private:
     MonitorConfig m_config;
+    double m_smoothedShearX{0.0};
+    double m_smoothedShearY{0.0};
 };

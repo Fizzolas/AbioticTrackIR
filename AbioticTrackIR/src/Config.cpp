@@ -190,6 +190,7 @@ bool ModConfig::Load(const std::string& iniPath, TrackingConfig& outConfig, int&
         else if (currentSection == "Parallax3D")
         {
             if (key == "Enabled") outConfig.Parallax3DEnabled = parseBool(val, outConfig.Parallax3DEnabled);
+            else if (key == "FocalDistanceCm") outConfig.Monitor.FocalDistanceCm = parseDouble(val, outConfig.Monitor.FocalDistanceCm);
             else if (key == "MonitorWidthCm") outConfig.Monitor.WidthCm = parseDouble(val, outConfig.Monitor.WidthCm);
             else if (key == "MonitorHeightCm") outConfig.Monitor.HeightCm = parseDouble(val, outConfig.Monitor.HeightCm);
             else if (key == "ViewingDistanceCm") outConfig.Monitor.ViewingDistanceCm = parseDouble(val, outConfig.Monitor.ViewingDistanceCm);
@@ -204,6 +205,8 @@ bool ModConfig::Load(const std::string& iniPath, TrackingConfig& outConfig, int&
             if (key == "Center") outConfig.HotkeyCenter = ParseKeyString(val, VK_F12);
             else if (key == "ToggleTracking") outConfig.HotkeyToggleTracking = ParseKeyString(val, VK_F11);
             else if (key == "ToggleParallax") outConfig.HotkeyToggleParallax = ParseKeyString(val, VK_F10);
+            else if (key == "ParallaxDepthInc") outConfig.HotkeyParallaxDepthInc = ParseKeyString(val, VK_F9);
+            else if (key == "ParallaxDepthDec") outConfig.HotkeyParallaxDepthDec = ParseKeyString(val, VK_F8);
             else if (key == "Freelook") outConfig.HotkeyFreelook = ParseKeyString(val, VK_LMENU);
         }
     }
@@ -256,18 +259,25 @@ bool ModConfig::Save(const std::string& iniPath, const TrackingConfig& config, i
          << "[Parallax3D]\n"
          << "; Off-axis perspective projection for authentic depth illusion\n"
          << "Enabled = " << (config.Parallax3DEnabled ? "true" : "false") << "\n"
+         << "; Focal convergence depth in cm: objects at this depth remain anchored to the monitor screen\n"
+         << "FocalDistanceCm = " << config.Monitor.FocalDistanceCm << "\n"
          << "; 24\": 53.1x29.9 | 27\": 59.7x33.6 | 32\": 69.8x39.3 | 34\" UW: 79.8x33.4\n"
          << "MonitorWidthCm = " << config.Monitor.WidthCm << "\n"
          << "MonitorHeightCm = " << config.Monitor.HeightCm << "\n"
          << "ViewingDistanceCm = " << config.Monitor.ViewingDistanceCm << "\n"
          << "Intensity = " << config.Monitor.ParallaxIntensity << "\n"
          << "DynamicFOV = " << (config.Monitor.DynamicFOV ? "true" : "false") << "\n"
-         << "MaxOffsetFrustum = " << config.Monitor.MaxOffsetFrustum << "\n\n"
+         << "MaxOffsetFrustum = " << config.Monitor.MaxOffsetFrustum << "\n"
+         << "InvertParallaxX = " << (config.Monitor.InvertParallaxX ? "true" : "false") << "\n"
+         << "InvertParallaxY = " << (config.Monitor.InvertParallaxY ? "true" : "false") << "\n\n"
          << "[Hotkeys]\n"
-         << "; Available: VK_F1..VK_F12, LeftAlt, LeftCtrl, LeftShift, MiddleMouse, Mouse4, Mouse5\n"
+         << "; Key bindings: VK_F1..VK_F12, LeftAlt, LeftCtrl, LeftShift, MiddleMouse, Mouse4, Mouse5\n"
+         << "; Default F-keys: F12=Recenter, F11=Toggle Tracking, F10=Toggle Parallax, F9=Depth+, F8=Depth-\n"
          << "Center = " << KeyToString(config.HotkeyCenter) << "\n"
          << "ToggleTracking = " << KeyToString(config.HotkeyToggleTracking) << "\n"
          << "ToggleParallax = " << KeyToString(config.HotkeyToggleParallax) << "\n"
+         << "ParallaxDepthInc = " << KeyToString(config.HotkeyParallaxDepthInc) << "\n"
+         << "ParallaxDepthDec = " << KeyToString(config.HotkeyParallaxDepthDec) << "\n"
          << "Freelook = " << KeyToString(config.HotkeyFreelook) << "\n";
 
     return true;

@@ -49,10 +49,12 @@ struct TrackingConfig
     MonitorConfig Monitor{};
 
     // Hotkeys (Virtual Key codes)
-    int HotkeyCenter{VK_F12};         // F12: Recenter
-    int HotkeyToggleTracking{VK_F11}; // F11: Toggle On/Off
-    int HotkeyToggleParallax{VK_F10}; // F10: Toggle Parallax 3D
-    int HotkeyFreelook{VK_LMENU};     // Left Alt: Free-look mode
+    int HotkeyCenter{VK_F12};               // F12: Recenter
+    int HotkeyToggleTracking{VK_F11};       // F11: Toggle On/Off
+    int HotkeyToggleParallax{VK_F10};       // F10: Toggle Parallax 3D
+    int HotkeyParallaxDepthInc{VK_F9};      // F9: Parallax Focal Depth + (deeper into screen)
+    int HotkeyParallaxDepthDec{VK_F8};      // F8: Parallax Focal Depth - (closer to viewer)
+    int HotkeyFreelook{VK_LMENU};           // Left Alt: Free-look mode
 };
 
 struct ProcessedTrackingState
@@ -78,6 +80,8 @@ public:
     void Recenter();
     void ToggleTracking();
     void ToggleParallax();
+    void AdjustFocalDepth(double deltaCm);
+    double GetFocalDepth() const;
     void SetFreelook(bool active);
 
     // Updates filter with raw input and computes final camera transformation (framerate-independent using deltaTime)

@@ -229,8 +229,8 @@
           <p>Full 3-axis rotation (Pitch, Yaw, Roll) and 3-axis translation (Lateral lean, Surge depth, Heave height).</p>
         </div>
         <div class="card">
-          <h3>Parallax 3D Frustum</h3>
-          <p>Dynamically computes asymmetrical off-axis projection frustums coupled to your physical head position on normal 2D monitors.</p>
+          <h3>Parallax 3D Holographic Window</h3>
+          <p>Johnny Lee-style off-axis perspective projection anchored to your monitor surface. Designed for OpenTrack face tracking (optional for TrackIR).</p>
         </div>
         <div class="card">
           <h3>OpenTrack &amp; TrackIR</h3>
@@ -275,7 +275,17 @@
           <tr>
             <td><kbd>F10</kbd></td>
             <td><strong>Toggle Parallax 3D</strong></td>
-            <td>Toggle off-axis asymmetrical perspective frustum.</td>
+            <td>Toggle holographic off-axis perspective window mode.</td>
+          </tr>
+          <tr>
+            <td><kbd>F9</kbd></td>
+            <td><strong>Focal Depth +</strong></td>
+            <td>Increases parallax convergence depth (+15 cm deeper into screen).</td>
+          </tr>
+          <tr>
+            <td><kbd>F8</kbd></td>
+            <td><strong>Focal Depth -</strong></td>
+            <td>Decreases parallax convergence depth (-15 cm closer to viewer).</td>
           </tr>
           <tr>
             <td><kbd>Left Alt</kbd></td>
@@ -290,10 +300,11 @@
       <h2>🚀 Quick Setup with OpenTrack</h2>
       <ol>
         <li>Start <strong>OpenTrack</strong> on your PC.</li>
-        <li>Choose your tracker input (e.g. <em>neuralnet</em> for webcam, or <em>PointTracker</em> for IR LEDs).</li>
+        <li>Choose your tracker input (e.g. <em>neuralnet</em> for webcam face tracking, or <em>PointTracker</em> for IR LEDs).</li>
         <li>Set Output to <strong><code>freetrack 2.0 Enhanced</code></strong> (Recommended) or <strong><code>UDP over network</code> (Port 4242)</strong>.</li>
         <li>Click <strong>Start</strong> in OpenTrack.</li>
         <li>Launch <strong>Abiotic Factor</strong> and press <kbd>F12</kbd> to calibrate!</li>
+        <li><em>Optional for OpenTrack users:</em> Press <kbd>F10</kbd> to enable Parallax 3D, and tune depth with <kbd>F9</kbd> / <kbd>F8</kbd>.</li>
       </ol>
     </section>
 
@@ -313,11 +324,20 @@ Z = 1.0
 
 [Parallax3D]
 Enabled = false
+FocalDistanceCm = 120.0
 MonitorWidthCm = 59.7
 MonitorHeightCm = 33.6
 ViewingDistanceCm = 65.0
 Intensity = 0.10
-DynamicFOV = false</code></pre>
+DynamicFOV = false
+
+[Hotkeys]
+Center = VK_F12
+ToggleTracking = VK_F11
+ToggleParallax = VK_F10
+ParallaxDepthInc = VK_F9
+ParallaxDepthDec = VK_F8
+Freelook = VK_LMENU</code></pre>
     </section>
   </main>
 

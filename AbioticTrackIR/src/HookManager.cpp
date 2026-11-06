@@ -251,6 +251,26 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
             m_parallaxKeyWasDown = down;
         }
 
+        if (config.HotkeyParallaxDepthInc != 0)
+        {
+            bool down = isKeyDown(config.HotkeyParallaxDepthInc);
+            if (down && !m_depthIncKeyWasDown)
+            {
+                m_engine->AdjustFocalDepth(+15.0);
+            }
+            m_depthIncKeyWasDown = down;
+        }
+
+        if (config.HotkeyParallaxDepthDec != 0)
+        {
+            bool down = isKeyDown(config.HotkeyParallaxDepthDec);
+            if (down && !m_depthDecKeyWasDown)
+            {
+                m_engine->AdjustFocalDepth(-15.0);
+            }
+            m_depthDecKeyWasDown = down;
+        }
+
         if (config.HotkeyFreelook != 0)
         {
             bool down = isKeyDown(config.HotkeyFreelook);
@@ -262,6 +282,8 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
         m_centerKeyWasDown = false;
         m_trackingKeyWasDown = false;
         m_parallaxKeyWasDown = false;
+        m_depthIncKeyWasDown = false;
+        m_depthDecKeyWasDown = false;
         m_engine->SetFreelook(false); // Clear freelook on Alt-Tab focus loss
     }
 
