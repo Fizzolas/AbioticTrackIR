@@ -58,20 +58,14 @@ struct FVector2d
 #pragma pack(push, 1)
 struct FMinimalViewInfo
 {
-    FVector3d Location;                   // 0x00 - 0x18
-    FRotator3d Rotation;                  // 0x18 - 0x30
-    float FOV;                            // 0x30 - 0x34
-    float DesiredFOV;                     // 0x34 - 0x38
-    float OrthoWidth;                     // 0x38 - 0x3C
-    float OrthoNearClipPlane;             // 0x3C - 0x40
-    float OrthoFarClipPlane;              // 0x40 - 0x44
-    float PerspectiveNearClipPlane;       // 0x44 - 0x48
-    float AspectRatio;                    // 0x48 - 0x4C
-    uint8_t Flags;                        // 0x4C (bit 0: bConstrainAspectRatio, bit 1: bUseFieldOfViewForLOD)
-    uint8_t ProjectionMode;               // 0x4D (0: Perspective, 1: Orthographic)
-    uint8_t Pad[2];                       // 0x4E - 0x50 alignment
-    FVector2d OffCenterProjectionOffset;  // 0x50 - 0x60 (X, Y in normalized frustum units)
-    float PostProcessBlendWeight;         // 0x60 - 0x64
+    FVector3d Location;                   // 0x000 - 0x018
+    FRotator3d Rotation;                  // 0x018 - 0x030
+    float FOV;                            // 0x030 - 0x034
+    float DesiredFOV;                     // 0x034 - 0x038
+    float OrthoWidth;                     // 0x038 - 0x03C
+    uint8_t Pad_3C[0x760 - 0x3C];         // 0x03C - 0x760 (Clip planes, AspectRatio, PostProcessSettings)
+    FVector2d OffCenterProjectionOffset;  // 0x760 - 0x770 (X, Y in normalized frustum units)
+    uint8_t Pad_770[0x800 - 0x770];       // 0x770 - 0x800 (PreviousViewTransform, etc.)
 };
 #pragma pack(pop)
 
@@ -81,4 +75,5 @@ static_assert(sizeof(FVector2d) == 16, "FVector2d must be 16 bytes");
 static_assert(offsetof(FMinimalViewInfo, Location) == 0x00, "Location offset mismatch");
 static_assert(offsetof(FMinimalViewInfo, Rotation) == 0x18, "Rotation offset mismatch");
 static_assert(offsetof(FMinimalViewInfo, FOV) == 0x30, "FOV offset mismatch");
-static_assert(offsetof(FMinimalViewInfo, OffCenterProjectionOffset) == 0x50, "OffCenterProjectionOffset offset mismatch");
+static_assert(offsetof(FMinimalViewInfo, OffCenterProjectionOffset) == 0x760, "OffCenterProjectionOffset offset mismatch");
+static_assert(sizeof(FMinimalViewInfo) == 0x800, "FMinimalViewInfo total size mismatch");
