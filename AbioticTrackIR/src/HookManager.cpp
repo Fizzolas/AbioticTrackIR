@@ -224,7 +224,8 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
 
         if (config.HotkeyCenter != 0)
         {
-            bool down = isKeyDown(config.HotkeyCenter);
+            // Support configured hotkey (e.g. F12) or Home key (safe from Steam screenshot hook)
+            bool down = isKeyDown(config.HotkeyCenter) || isKeyDown(VK_HOME);
             if (down && !m_centerKeyWasDown)
             {
                 m_engine->Recenter();

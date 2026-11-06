@@ -71,7 +71,7 @@ echo ======================================================================
 echo 1. Launch OpenTrack and ensure tracking is running (output: freetrack 2.0 or UDP 4242).
 echo 2. Launch Abiotic Factor.
 echo 3. Controls:
-echo    - F12: Recenter View
+echo    - Home / F12: Recenter View (Auto-centers on face lock)
 echo    - F11: Toggle Head Tracking
 echo    - F10: Toggle Parallax 3D Window Mode
 echo    - F9:  Increase Focal Depth (+15 cm deeper into screen)

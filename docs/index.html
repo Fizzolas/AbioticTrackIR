@@ -263,9 +263,9 @@
         </thead>
         <tbody>
           <tr>
-            <td><kbd>F12</kbd></td>
+            <td><kbd>Home</kbd> / <kbd>F12</kbd></td>
             <td><strong>Recenter View</strong></td>
-            <td>Zeroes current head position as the center forward view.</td>
+            <td>Calibrates center rest pose (auto-calibrates on face lock; Home key bypasses Steam screenshot hook).</td>
           </tr>
           <tr>
             <td><kbd>F11</kbd></td>
@@ -303,8 +303,8 @@
         <li>Choose your tracker input (e.g. <em>neuralnet</em> for webcam face tracking, or <em>PointTracker</em> for IR LEDs).</li>
         <li>Set Output to <strong><code>freetrack 2.0 Enhanced</code></strong> (Recommended) or <strong><code>UDP over network</code> (Port 4242)</strong>.</li>
         <li>Click <strong>Start</strong> in OpenTrack.</li>
-        <li>Launch <strong>Abiotic Factor</strong> and press <kbd>F12</kbd> to calibrate!</li>
-        <li><em>Optional for OpenTrack users:</em> Press <kbd>F10</kbd> to enable Parallax 3D, and tune depth with <kbd>F9</kbd> / <kbd>F8</kbd>.</li>
+        <li>Launch <strong>Abiotic Factor</strong> — view auto-calibrates on active face lock (or press <kbd>Home</kbd> / <kbd>F12</kbd> anytime)!</li>
+        <li><em>Parallax 3D Window:</em> Enabled by default at authentic 1:1 scale; fine-tune depth with <kbd>F9</kbd> / <kbd>F8</kbd>, or press <kbd>F10</kbd> to toggle.</li>
       </ol>
     </section>
 
@@ -312,23 +312,28 @@
       <h2>⚙️ Configuration Preview (<code>AbioticTrackIR.ini</code>)</h2>
       <pre><code>[General]
 Enabled = true
+AimCoupled = false
+PauseInMenus = true
 UdpPort = 4242
 
 [Sensitivity]
 Yaw = 1.0
 Pitch = 1.0
 Roll = 0.8
-X = 1.0
-Y = 1.0
-Z = 1.0
+
+[Limits]
+EnableTranslation = false
+MaxTranslationX_Cm = 8.0
+MaxTranslationY_Cm = 8.0
+MaxTranslationZ_Cm = 6.0
 
 [Parallax3D]
-Enabled = false
-FocalDistanceCm = 120.0
+Enabled = true
+FocalDistanceCm = 100.0
 MonitorWidthCm = 59.7
 MonitorHeightCm = 33.6
 ViewingDistanceCm = 65.0
-Intensity = 0.10
+Intensity = 1.0
 DynamicFOV = false
 
 [Hotkeys]

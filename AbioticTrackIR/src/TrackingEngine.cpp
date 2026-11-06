@@ -109,13 +109,25 @@ ProcessedTrackingState TrackingEngine::Process(const RawTrackingPose& rawPose, f
     }
 
     // 1. Recenter baseline capture (instant zero-calibration or stream recovery)
-    if (!m_hasCenter || m_streamWasLost)
+    // Detect whether m_centerOffset was captured from an uninitialized zero-frame
+    bool centerIsZero = (std::abs(m_centerOffset.X) < 0.0001 &&
+                         std::abs(m_centerOffset.Y) < 0.0001 &&
+                         std::abs(m_centerOffset.Z) < 0.0001 &&
+                         std::abs(m_centerOffset.Yaw) < 0.0001 &&
+                         std::abs(m_centerOffset.Pitch) < 0.0001 &&
+                         std::abs(m_centerOffset.Roll) < 0.0001);
+
+    bool hasMeaningfulPose = (std::abs(rawPose.X) > 0.001 ||
+                              std::abs(rawPose.Y) > 0.001 ||
+                              std::abs(rawPose.Z) > 0.001 ||
+                              std::abs(rawPose.Yaw) > 0.001 ||
+                              std::abs(rawPose.Pitch) > 0.001 ||
+                              std::abs(rawPose.Roll) > 0.001);
+
+    if (!m_hasCenter || (centerIsZero && hasMeaningfulPose))
     {
-        if (!m_hasCenter)
-        {
-            m_centerOffset = rawPose;
-            m_hasCenter = true;
-        }
+        m_centerOffset = rawPose;
+        m_hasCenter = true;
         m_filteredPose = RawTrackingPose{}; // Cleanly reset smoothed pose to zero
         m_filteredPose.IsValid = true;
         m_streamWasLost = false;
@@ -189,9 +201,16 @@ ProcessedTrackingState TrackingEngine::Process(const RawTrackingPose& rawPose, f
     // OpenTrack X = Lateral (Left/Right)    -> Unreal Y (Right)
     // OpenTrack Y = Vertical (Up/Down)      -> Unreal Z (Up)
     // OpenTrack Z = Depth (Forward/Back)    -> Unreal X (Forward)
-    state.LocalTranslation.X = m_filteredPose.Z; // Local Forward in UE
-    state.LocalTranslation.Y = m_filteredPose.X; // Local Right in UE
-    state.LocalTranslation.Z = m_filteredPose.Y; // Local Up in UE
+    if (m_config.EnableTranslation)
+    {
+        state.LocalTranslation.X = m_filteredPose.Z; // Local Forward in UE
+        state.LocalTranslation.Y = m_filteredPose.X; // Local Right in UE
+        state.LocalTranslation.Z = m_filteredPose.Y; // Local Up in UE
+    }
+    else
+    {
+        state.LocalTranslation = FVector3d{0.0, 0.0, 0.0};
+    }
 
     // 6. Neck Pivot Displacement
     if (m_config.UseNeckModel)

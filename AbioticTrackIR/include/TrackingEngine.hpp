@@ -22,10 +22,11 @@ struct TrackingConfig
     double SensZ{1.0};
     bool ScaleSensWithFOV{true}; // Dynamically damp sensitivity when aiming down sights (ADS)
 
-    // Translation limits (cm) to prevent camera clipping through walls
-    double MaxTranslationX_Cm{25.0};
-    double MaxTranslationY_Cm{30.0};
-    double MaxTranslationZ_Cm{25.0};
+    // Translation limits (cm) - Disabled by default in FPS games to keep head 100% centered in player mesh
+    bool EnableTranslation{false};
+    double MaxTranslationX_Cm{8.0};
+    double MaxTranslationY_Cm{8.0};
+    double MaxTranslationZ_Cm{6.0};
 
     // Axis Inversions
     bool InvertYaw{false};

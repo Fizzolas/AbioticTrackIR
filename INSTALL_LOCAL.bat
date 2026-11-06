@@ -18,11 +18,7 @@ echo [INFO] Copying version.dll (Proxy Hook)...
 copy /Y "d:\OpenTrack\TrackOpen\ModIO_Package\Binaries\Win64\version.dll" "%GAME_BIN%\version.dll"
 
 echo [INFO] Copying AbioticTrackIR.ini (Config)...
-if not exist "%GAME_BIN%\AbioticTrackIR.ini" (
-    copy /Y "d:\OpenTrack\TrackOpen\ModIO_Package\Binaries\Win64\AbioticTrackIR.ini" "%GAME_BIN%\AbioticTrackIR.ini"
-) else (
-    echo [INFO] Existing AbioticTrackIR.ini preserved.
-)
+copy /Y "d:\OpenTrack\TrackOpen\ModIO_Package\Binaries\Win64\AbioticTrackIR.ini" "%GAME_BIN%\AbioticTrackIR.ini"
 
 echo [INFO] Copying AbioticTrackIR-Bridge.exe (Control Center)...
 copy /Y "d:\OpenTrack\TrackOpen\ModIO_Package\Binaries\Win64\AbioticTrackIR-Bridge.exe" "%GAME_BIN%\AbioticTrackIR-Bridge.exe"
@@ -34,7 +30,7 @@ echo ======================================================================
 echo 1. Start OpenTrack (Output: freetrack 2.0 Enhanced or UDP 4242).
 echo 2. Launch Abiotic Factor.
 echo 3. In-Game Controls:
-echo    - F12: Recenter View
+echo    - Home / F12: Recenter View (Auto-centers on face lock)
 echo    - F11: Toggle Head Tracking
 echo    - F10: Toggle Parallax 3D Window Mode
 echo    - F9:  Increase Focal Depth (+15 cm deeper into screen)

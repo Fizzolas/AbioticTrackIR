@@ -162,7 +162,8 @@ bool ModConfig::Load(const std::string& iniPath, TrackingConfig& outConfig, int&
         }
         else if (currentSection == "Limits")
         {
-            if (key == "MaxTranslationX_Cm") outConfig.MaxTranslationX_Cm = parseDouble(val, outConfig.MaxTranslationX_Cm);
+            if (key == "EnableTranslation") outConfig.EnableTranslation = parseBool(val, outConfig.EnableTranslation);
+            else if (key == "MaxTranslationX_Cm") outConfig.MaxTranslationX_Cm = parseDouble(val, outConfig.MaxTranslationX_Cm);
             else if (key == "MaxTranslationY_Cm") outConfig.MaxTranslationY_Cm = parseDouble(val, outConfig.MaxTranslationY_Cm);
             else if (key == "MaxTranslationZ_Cm") outConfig.MaxTranslationZ_Cm = parseDouble(val, outConfig.MaxTranslationZ_Cm);
         }
@@ -236,6 +237,8 @@ bool ModConfig::Save(const std::string& iniPath, const TrackingConfig& config, i
          << "Z = " << config.SensZ << "\n"
          << "ScaleSensWithFOV = " << (config.ScaleSensWithFOV ? "true" : "false") << "\n\n"
          << "[Limits]\n"
+         << "; Enable physical camera translation in centimeters (false keeps camera 100% anchored in player eye socket)\n"
+         << "EnableTranslation = " << (config.EnableTranslation ? "true" : "false") << "\n"
          << "; Safety translation clamps in centimeters to prevent clipping through geometry\n"
          << "MaxTranslationX_Cm = " << config.MaxTranslationX_Cm << "\n"
          << "MaxTranslationY_Cm = " << config.MaxTranslationY_Cm << "\n"

@@ -56,7 +56,7 @@ Includes `AbioticTrackIR-Bridge.exe`, a standalone diagnostic utility that visua
 
 | Hotkey | Action | Description |
 | :--- | :--- | :--- |
-| **F12** | **Recenter View** | Instantly zeroes current head posture as the center forward view. |
+| **Home / F12** | **Recenter View** | Calibrates center rest pose (auto-calibrates on face lock; Home key bypasses Steam screenshot hook). |
 | **F11** | **Toggle Tracking** | Enables or disables head tracking on the fly. |
 | **F10** | **Toggle Parallax 3D** | Toggles holographic off-axis perspective window mode. |
 | **F9** | **Focal Depth +** | Increases parallax convergence depth (+15 cm deeper into screen). |
@@ -78,8 +78,8 @@ Includes `AbioticTrackIR-Bridge.exe`, a standalone diagnostic utility that visua
    * OR **`UDP over network`** (Port: `4242`).
 4. Click **Start** in OpenTrack.
 5. Launch **Abiotic Factor**!
-6. Sit comfortably in your natural playing posture and press **F12** to calibrate your center view.
-7. *(Optional for OpenTrack face tracking)*: Press **F10** to activate Parallax 3D, and fine-tune depth with **F9** / **F8**.
+6. Sit comfortably in your natural playing posture — view auto-centers on active face lock, or press **Home** / **F12** at any time.
+7. *(Parallax 3D Window)*: Enabled by default at authentic 1:1 scale; fine-tune depth with **F9** (deeper) / **F8** (closer), or press **F10** to toggle on/off.
 
 ---
 
@@ -128,10 +128,12 @@ Z = 1.0                    ; Vertical elevation sensitivity
 ScaleSensWithFOV = true    ; Dynamically damps sensitivity when aiming down sights (ADS)
 
 [Limits]
-; Safety translation limits in centimeters to prevent clipping through level geometry
-MaxTranslationX_Cm = 25.0
-MaxTranslationY_Cm = 30.0
-MaxTranslationZ_Cm = 25.0
+; Keep camera 100% anchored inside the player's eye socket without mesh clipping
+EnableTranslation = false
+; Maximum physical translation in centimeters when enabled
+MaxTranslationX_Cm = 8.0
+MaxTranslationY_Cm = 8.0
+MaxTranslationZ_Cm = 6.0
 
 [Inversion]
 InvertYaw = false
@@ -156,20 +158,20 @@ PivotUpCm = -2.0
 [Parallax3D]
 ; Holographic off-axis perspective projection (Johnny Lee desktop VR window effect)
 ; Anchors convergence to the physical monitor glass. Designed for OpenTrack face tracking.
-; Toggle in-game with F10. Tune depth plane with F9 (deeper) and F8 (closer).
-Enabled = false
-FocalDistanceCm = 120.0    ; Convergence depth (cm): objects at this depth remain anchored to the monitor
+; Enabled by default. Toggle in-game with F10. Tune depth plane with F9 (deeper) and F8 (closer).
+Enabled = true
+FocalDistanceCm = 100.0    ; Convergence depth (cm): objects at this depth remain anchored to the monitor
 ; Monitor display dimensions in centimeters (measure physical panel width & height):
 ; 24": 53.1 x 29.9 | 27": 59.7 x 33.6 | 32": 69.8 x 39.3 | 34" UW: 79.8 x 33.4
 MonitorWidthCm = 59.7
 MonitorHeightCm = 33.6
 ViewingDistanceCm = 65.0   ; Normal distance from eyes to screen
-Intensity = 0.10           ; Subtle frustum shear intensity (calibrated to eliminate motion sickness)
+Intensity = 1.0            ; 1.0 = authentic 1:1 holographic window depth illusion
 DynamicFOV = false         ; Disabled by default to prevent disorienting dolly-zoom vertigo
-MaxOffsetFrustum = 0.15    ; Edge distortion safety clamp
+MaxOffsetFrustum = 0.25    ; Edge distortion safety clamp
 
 [Hotkeys]
-; Simplified F-keys: F12=Recenter, F11=Toggle Tracking, F10=Toggle Parallax, F9=Depth+, F8=Depth-
+; Simplified F-keys: Home/F12=Recenter, F11=Toggle Tracking, F10=Toggle Parallax, F9=Depth+, F8=Depth-
 ; Available keys: VK_F1..VK_F12, LeftAlt, LeftCtrl, LeftShift, MiddleMouse, Mouse4, Mouse5
 Center = VK_F12
 ToggleTracking = VK_F11
