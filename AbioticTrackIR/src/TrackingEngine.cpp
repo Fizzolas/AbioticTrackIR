@@ -252,10 +252,17 @@ void TrackingEngine::ApplyToViewInfo(FMinimalViewInfo* pov, const ProcessedTrack
         pov->Rotation.Roll = FRotator3d::NormalizeAxis(pov->Rotation.Roll + state.Rotation.Roll);
     }
 
-    // 2. Transform translation (neck + head translation) into World Space using Actor Yaw
+    // 2. Transform translation (neck + head translation + parallax shift) into World Space using Actor Yaw
     double totalLocalForward = state.LocalTranslation.X + state.NeckDisplacement.X;
     double totalLocalRight   = state.LocalTranslation.Y + state.NeckDisplacement.Y;
     double totalLocalUp      = state.LocalTranslation.Z + state.NeckDisplacement.Z;
+
+    if (state.IsParallaxActive)
+    {
+        totalLocalForward += state.Parallax.CameraShiftLocal.X;
+        totalLocalRight   += state.Parallax.CameraShiftLocal.Y;
+        totalLocalUp      += state.Parallax.CameraShiftLocal.Z;
+    }
 
     double radYaw = DEG_TO_RAD(actorBaseYawDeg);
     double cosY = std::cos(radYaw);

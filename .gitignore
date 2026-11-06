@@ -39,3 +39,4 @@ $RECYCLE.BIN/
 *.swp
 *~
 .DS_Store
+*.csv

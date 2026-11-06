@@ -197,13 +197,10 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
     // ViewTarget is an FTViewTarget at offset 0x330.
     // Inside FTViewTarget, Target is at +0x00, and POV is at +0x10 -> 0x330 + 0x10 = 0x340!
     FMinimalViewInfo* povCache = (FMinimalViewInfo*)(baseAddr + 0x13b0);
-    FMinimalViewInfo* povVT    = (FMinimalViewInfo*)(baseAddr + 0x340);
 
-    // Sanity checks on pointers (FOV must be within realistic bounds, supporting sniper zoom):
+    // Sanity check on CameraCachePrivate (FOV must be within realistic bounds, supporting sniper zoom):
     bool cacheValid = (povCache->FOV >= 3.0f && povCache->FOV <= 170.0f);
-    bool vtValid    = (povVT->FOV >= 3.0f && povVT->FOV <= 170.0f);
-
-    if (!cacheValid && !vtValid) return;
+    if (!cacheValid) return;
 
     const auto& config = m_engine->GetConfig();
 
@@ -254,7 +251,7 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
 
         if (config.HotkeyParallaxDepthInc != 0)
         {
-            bool down = isKeyDown(config.HotkeyParallaxDepthInc);
+            bool down = isKeyDown(config.HotkeyParallaxDepthInc) || isKeyDown(VK_PRIOR) || isKeyDown(VK_ADD);
             if (down && !m_depthIncKeyWasDown)
             {
                 m_engine->AdjustFocalDepth(+15.0);
@@ -264,7 +261,7 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
 
         if (config.HotkeyParallaxDepthDec != 0)
         {
-            bool down = isKeyDown(config.HotkeyParallaxDepthDec);
+            bool down = isKeyDown(config.HotkeyParallaxDepthDec) || isKeyDown(VK_NEXT) || isKeyDown(VK_SUBTRACT);
             if (down && !m_depthDecKeyWasDown)
             {
                 m_engine->AdjustFocalDepth(-15.0);
@@ -300,8 +297,7 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
         if (cursorVisible)
         {
             // Do not alter view or control rotation while menu cursor is active; align frustum straight
-            if (cacheValid) { povCache->OffCenterProjectionOffset = {0.0, 0.0}; }
-            if (vtValid)    { povVT->OffCenterProjectionOffset = {0.0, 0.0}; }
+            povCache->OffCenterProjectionOffset = {0.0, 0.0};
             m_aimCoupledInitialized = false;
             return;
         }
@@ -310,7 +306,7 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
     // Query raw tracking from OpenTrack / FreeTrack
     RawTrackingPose raw = m_receiver->GetLatestPose();
 
-    float baseFOV = cacheValid ? povCache->FOV : povVT->FOV;
+    float baseFOV = povCache->FOV;
     ProcessedTrackingState state = m_engine->Process(raw, baseFOV, deltaTime);
 
     if (!state.IsTrackingActive)
@@ -319,7 +315,7 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
         return;
     }
 
-    double baseYaw = cacheValid ? povCache->Rotation.Yaw : povVT->Rotation.Yaw;
+    double baseYaw = povCache->Rotation.Yaw;
 
     // Aim coupling vs Decoupled View:
     // If AimCoupled is active, player is alive (valid Pawn), and look input is not ignored by the game,
@@ -354,16 +350,8 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
                 pControlRot->Yaw   = FRotator3d::NormalizeAxis(pControlRot->Yaw + deltaYaw);
 
                 // Zero-latency instant camera alignment for current rendering frame
-                if (cacheValid)
-                {
-                    povCache->Rotation.Pitch = std::clamp(FRotator3d::NormalizeAxis(povCache->Rotation.Pitch + deltaPitch), -89.0, 89.0);
-                    povCache->Rotation.Yaw   = FRotator3d::NormalizeAxis(povCache->Rotation.Yaw + deltaYaw);
-                }
-                if (vtValid)
-                {
-                    povVT->Rotation.Pitch = std::clamp(FRotator3d::NormalizeAxis(povVT->Rotation.Pitch + deltaPitch), -89.0, 89.0);
-                    povVT->Rotation.Yaw   = FRotator3d::NormalizeAxis(povVT->Rotation.Yaw + deltaYaw);
-                }
+                povCache->Rotation.Pitch = std::clamp(FRotator3d::NormalizeAxis(povCache->Rotation.Pitch + deltaPitch), -89.0, 89.0);
+                povCache->Rotation.Yaw   = FRotator3d::NormalizeAxis(povCache->Rotation.Yaw + deltaYaw);
             }
         }
     }
@@ -372,13 +360,8 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
         m_aimCoupledInitialized = false;
     }
 
-    // Apply to both CameraCachePrivate (rendered by Viewport) and ViewTarget
-    if (cacheValid)
-    {
-        m_engine->ApplyToViewInfo(povCache, state, baseYaw, applyCamRotation);
-    }
-    if (vtValid)
-    {
-        m_engine->ApplyToViewInfo(povVT, state, baseYaw, applyCamRotation);
-    }
+    // Apply strictly to CameraCachePrivate (rendered by Viewport this frame).
+    // ViewTarget.POV is intentionally left pristine to prevent frame-over-frame accumulation,
+    // death-camera yaw spinning, and respawn rotation skew.
+    m_engine->ApplyToViewInfo(povCache, state, baseYaw, applyCamRotation);
 }

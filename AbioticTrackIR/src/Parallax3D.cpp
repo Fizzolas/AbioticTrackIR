@@ -49,11 +49,19 @@ ParallaxResult Parallax3DEngine::CalculateParallax(double headLateral_cm, double
     double halfW_focal = focalDist * tanHalfFov;
     double halfH_focal = halfW_focal / aspect;
 
+    // Physical Camera Shift in local coordinates (cm):
+    // Clamping to a comfortable safety range (+/- 6.0 cm) keeps the viewpoint safely anchored inside
+    // the player collision capsule while creating authentic, immersive motion parallax.
+    constexpr double maxShiftCm = 6.0;
+    result.CameraShiftLocal.X = std::clamp(headDepth_cm,    -maxShiftCm, maxShiftCm);
+    result.CameraShiftLocal.Y = std::clamp(headLateral_cm,  -maxShiftCm, maxShiftCm);
+    result.CameraShiftLocal.Z = std::clamp(headVertical_cm, -maxShiftCm, maxShiftCm);
+
     // Johnny Chung Lee off-axis projection shear:
-    // Moving head right (headLateral_cm > 0) -> camera moves right -> projection offset positive
-    // cancels translation at focal plane Z = focalDist
-    double targetShearX = (headLateral_cm / halfW_focal) * m_config.ParallaxIntensity;
-    double targetShearY = (headVertical_cm / halfH_focal) * m_config.ParallaxIntensity;
+    // Moving head right (CameraShiftLocal.Y > 0) -> camera moves right -> projection offset positive
+    // cancels translation at focal plane distance Z = focalDist
+    double targetShearX = (result.CameraShiftLocal.Y / halfW_focal) * m_config.ParallaxIntensity;
+    double targetShearY = (result.CameraShiftLocal.Z / halfH_focal) * m_config.ParallaxIntensity;
 
     if (m_config.InvertParallaxX) targetShearX = -targetShearX;
     if (m_config.InvertParallaxY) targetShearY = -targetShearY;
@@ -62,13 +70,8 @@ ParallaxResult Parallax3DEngine::CalculateParallax(double headLateral_cm, double
     targetShearX = std::clamp(targetShearX, -m_config.MaxOffsetFrustum, m_config.MaxOffsetFrustum);
     targetShearY = std::clamp(targetShearY, -m_config.MaxOffsetFrustum, m_config.MaxOffsetFrustum);
 
-    // Exponential smoothing (alpha = 0.35) to eliminate high-frequency webcam face tracking jitter
-    constexpr double alpha = 0.35;
-    m_smoothedShearX += alpha * (targetShearX - m_smoothedShearX);
-    m_smoothedShearY += alpha * (targetShearY - m_smoothedShearY);
-
-    result.ProjectionOffset.X = m_smoothedShearX;
-    result.ProjectionOffset.Y = m_smoothedShearY;
+    result.ProjectionOffset.X = targetShearX;
+    result.ProjectionOffset.Y = targetShearY;
 
     // Dynamic depth FOV: leaning in increases natural visual angle (disabled by default)
     if (m_config.DynamicFOV && baseGameFOV > 3.0f)
@@ -92,11 +95,6 @@ ParallaxResult Parallax3DEngine::CalculateParallax(double headLateral_cm, double
         double maxAllowedFOV = std::min(150.0, (double)baseGameFOV * 1.30);
         result.AdjustedFOV = (float)std::clamp(targetFOV, minAllowedFOV, maxAllowedFOV);
     }
-
-    // Physical Camera Shift in local coordinates (cm)
-    result.CameraShiftLocal.X = headDepth_cm;
-    result.CameraShiftLocal.Y = headLateral_cm;
-    result.CameraShiftLocal.Z = headVertical_cm;
 
     return result;
 }

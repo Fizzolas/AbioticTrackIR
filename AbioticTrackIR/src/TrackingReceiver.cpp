@@ -164,10 +164,12 @@ bool TrackingReceiver::PollSharedMemory(RawTrackingPose& outPose)
     outPose.FrameId = (uint32_t)idBefore;
     
     // Coordinate polarity alignment for Unreal Engine 5:
-    // Yaw:   +RAD_TO_DEG -> Turning head right turns camera RIGHT (Confirmed working)
-    // Pitch: -RAD_TO_DEG -> Looking head up looks camera UP
-    // Roll:  +RAD_TO_DEG -> Tilting head right tilts camera RIGHT
-    outPose.Yaw   =  RAD_TO_DEG(snapshot.Yaw);
+    // OpenTrack stores:
+    // snapshot.Yaw   = -mappedYaw   * (PI / 180.0)
+    // snapshot.Pitch = -mappedPitch * (PI / 180.0)
+    // snapshot.Roll  = +mappedRoll  * (PI / 180.0)
+    // Therefore, snapshot.Yaw and snapshot.Pitch must both be negated to restore positive 1:1 rotation:
+    outPose.Yaw   = -RAD_TO_DEG(snapshot.Yaw);
     outPose.Pitch = -RAD_TO_DEG(snapshot.Pitch);
     outPose.Roll  =  RAD_TO_DEG(snapshot.Roll);
 
