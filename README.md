@@ -18,9 +18,10 @@ In addition to full rotational and translational tracking, this mod features an 
   * **Surge / Depth ($Y$):** Lean in towards security terminals, microscopes, and crafting benches.
   * **Heave / Height ($Z$):** Stand tall to view over desk barriers or duck slightly beneath catwalks.
 
-### 2. Dual Control Schemes
-* **Aim-Coupled Mode:** Natural tracking where head motion steers your scientist's weapon and aiming reticle with zero latency.
-* **Decoupled Free-Look Mode:** Hold **Left Alt** (configurable) to freely scan your surroundings in $360^\circ$ while your scientist continues sprinting, walking, or carrying gear forward.
+### 2. Authentic 6-DOF Head-Look (Freelook)
+* **Independent Camera Control:** Optical head tracking controls your scientist's viewpoint and perspective while your mouse independently aims your weapon and reticle with steady, pinpoint precision (matching the authentic TrackIR experience in *Arma*, *DayZ*, *DCS*, and *Star Citizen*).
+* **Enhanced Situational Awareness:** Freely scan facility corridors, look up into ceiling vents, and check corners without pulling your gun barrel or weapon crosshair off your target.
+* **Free-Look Hotkey:** Hold **Left Alt** (configurable) to freely glance around independently of your scientist's body motion.
 
 ### 3. Parallax 3D Frustum Engine (The Holographic Illusion)
 By coupling your real-world eye coordinates with Unreal Engine 5's projection matrix:
@@ -109,7 +110,7 @@ Includes `AbioticTrackIR-Bridge.exe`, a standalone diagnostic utility that visua
 
 [General]
 Enabled = true             ; Master switch for head tracking
-AimCoupled = false         ; false = Decoupled view; true = Head steers weapon crosshair
+AimCoupled = false         ; false = Independent head-look (mouse aims, head looks); true = Experimental aim steering
 PauseInMenus = true        ; Suspends tracking while inventory/crafting cursor is visible
 UdpPort = 4242             ; OpenTrack UDP port (when UDP mode is used)
 

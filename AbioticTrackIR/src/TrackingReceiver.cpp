@@ -164,12 +164,12 @@ bool TrackingReceiver::PollSharedMemory(RawTrackingPose& outPose)
     outPose.FrameId = (uint32_t)idBefore;
     
     // Coordinate polarity alignment for Unreal Engine 5:
-    // Yaw:   +RAD_TO_DEG -> Turning head right turns camera RIGHT
-    // Pitch: +RAD_TO_DEG -> Looking head up looks camera UP
-    // Roll:  -RAD_TO_DEG -> Tilting head right tilts camera RIGHT (inverts UE5's counter-clockwise roll)
+    // Yaw:   +RAD_TO_DEG -> Turning head right turns camera RIGHT (Confirmed working)
+    // Pitch: -RAD_TO_DEG -> Looking head up looks camera UP
+    // Roll:  +RAD_TO_DEG -> Tilting head right tilts camera RIGHT
     outPose.Yaw   =  RAD_TO_DEG(snapshot.Yaw);
-    outPose.Pitch =  RAD_TO_DEG(snapshot.Pitch);
-    outPose.Roll  = -RAD_TO_DEG(snapshot.Roll);
+    outPose.Pitch = -RAD_TO_DEG(snapshot.Pitch);
+    outPose.Roll  =  RAD_TO_DEG(snapshot.Roll);
 
     // FreeTrack translations are in millimeters; convert to centimeters
     outPose.X = snapshot.X * 0.1;
@@ -216,8 +216,8 @@ bool TrackingReceiver::PollUDP(RawTrackingPose& outPose)
         outPose.Y     = buffer[1];
         outPose.Z     = buffer[2];
         outPose.Yaw   =  buffer[3];
-        outPose.Pitch =  buffer[4];
-        outPose.Roll  = -buffer[5]; // Invert Roll to match UE5 camera roll direction
+        outPose.Pitch = -buffer[4];
+        outPose.Roll  =  buffer[5];
         outPose.IsValid = true;
         outPose.FrameId = ++m_udpFrameId;
         return true;
