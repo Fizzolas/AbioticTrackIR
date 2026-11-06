@@ -1,41 +1,52 @@
 # AbioticTrackIR: 6-DOF Head Tracking & Parallax 3D Mod for Abiotic Factor
 
-**AbioticTrackIR** brings full Six Degrees of Freedom (6-DOF) head tracking to **Abiotic Factor** using **OpenTrack** (as a substitute for official hardware) as well as official **TrackIR** devices.
+**AbioticTrackIR** brings authentic Six Degrees of Freedom (6-DOF) optical head tracking to **Abiotic Factor** using **OpenTrack** (as an accessible substitute for specialized hardware) as well as official **TrackIR** devices.
 
-In addition to standard pitch, yaw, roll, and lateral/depth translations, this mod features a complete **Parallax 3D Perspective Engine** (the Side Quest!): it dynamically calculates asymmetrical off-axis projection frustums (`OffCenterProjectionOffset`) and depth-coupled FOV based on your physical head position, turning your flat monitor into an authentic holographic glass window into the subterranean laboratories of GATE Cascade!
+In addition to full rotational and translational tracking, this mod features an off-axis **Parallax 3D Perspective Frustum Engine**: it dynamically computes asymmetrical projection frustums (`OffCenterProjectionOffset`) and depth-coupled FOV based on your physical head position, turning any flat monitor into a holographic glass window into the subterranean research laboratories of GATE Cascade!
 
 ---
 
 ## 🌟 Key Features
 
-### 1. Complete 6-DOF Head Tracking
-* **Rotations:** Pitch (look up/down), Yaw (look left/right), Roll (tilt head side-to-side).
+### 1. Six Degrees of Freedom (6-DOF) Tracking
+* **Rotations:**
+  * **Pitch:** Look up into ventilation shafts and down into toxic hazard pits.
+  * **Yaw:** Glance left and right down facility corridors.
+  * **Roll:** Tilt your head to inspect angles or peek through security barricades.
 * **Translations:**
-  * **X (Lateral):** Physically lean around door frames, file cabinets, and barricades.
-  * **Y (Surge / Depth):** Lean in towards terminals, crafting benches, and microscopes.
-  * **Z (Heave / Height):** Stretch up to see over obstacles or duck down slightly.
+  * **Lateral ($X$):** Physically lean around door frames, file cabinets, and defensive shields.
+  * **Surge / Depth ($Y$):** Lean in towards security terminals, microscopes, and crafting benches.
+  * **Heave / Height ($Z$):** Stand tall to view over desk barriers or duck slightly beneath catwalks.
 
-### 2. Built for OpenTrack & TrackIR
-* **Native OpenTrack Support:** Connects directly via high-speed **FreeTrack 2.0 Shared Memory (`FT_SharedMem`)** and non-blocking **UDP (Port 4242)**.
-* **OpenTrack Hardware Flexibility:** Use whatever input you have:
-  * Standard Webcams (via OpenTrack *neuralnet* face tracker)
-  * Phone Cameras (via DroidCam / FreePIE UDP)
-  * IR Headsets & Clips (TrackHat, DelanClip, DIY IR LEDs via PointTracker)
-  * Aruco paper markers
-  * Tobii Eye Tracker / PS3 Eye
-* **Official TrackIR Compatibility:** Works seamlessly with TrackIR 4 / 5 and TrackClip Pro via `NPClient64`.
+### 2. Dual Control Schemes
+* **Aim-Coupled Mode:** Natural tracking where head motion steers your scientist's weapon and aiming reticle with zero latency.
+* **Decoupled Free-Look Mode:** Hold **Left Alt** (configurable) to freely scan your surroundings in $360^\circ$ while your scientist continues sprinting, walking, or carrying gear forward.
 
-### 3. Biomechanical Cervical Neck Model
-Real human eyes do not rotate around the eyeball center—the head pivots around the cervical spine (~8 cm behind and ~12 cm below the eyes). AbioticTrackIR incorporates an anthropomorphic neck model so rotating your head naturally displaces your eyes, eliminating clipping and motion sickness.
-
-### 4. Aim Decoupling & Independent Free-Look
-* **Aim-Coupled Mode:** Direct, intuitive view tracking.
-* **Decoupled Free-Look Mode:** Hold **Left Alt** (configurable) to look around freely in 360° while your scientist character continues walking, sprinting, or holding items forward.
-
-### 5. Parallax 3D Frustum Engine (The Depth Illusion)
+### 3. Parallax 3D Frustum Engine (The Holographic Illusion)
 By coupling your real-world eye coordinates with Unreal Engine 5's projection matrix:
-* **Off-Axis Projection Frustum:** The camera shears the viewing frustum opposite to your head offset. Near objects (weapon viewmodel, desk edges, railings) shift faster than distant walls, creating undeniable real stereoscopic motion parallax on a normal 2D monitor.
-* **Dynamic Focal Distance / FOV:** Leaning closer to the screen naturally widens your field of view, exactly like peering closer into a real window.
+* **Off-Axis Frustum Shear:** As your head shifts, the projection frustum shears inversely. Foreground objects (weapon viewmodel, desk corners, railing edges) exhibit stereoscopic motion parallax against background walls on standard 2D displays.
+* **Dynamic Focal Distance / FOV:** Leaning closer to the screen naturally widens your optical field of view, matching the visual geometry of looking through a physical glass aperture.
+
+### 4. Dynamic ADS & Sniper Zoom Dampening
+When aiming down sights (ADS) with magnified weaponry, tracking sensitivity automatically dampens proportionally to the active optical FOV, ensuring jitter-free precision for long-range engagements.
+
+### 5. Biomechanical Cervical Neck Model
+Human eyes do not rotate around the center of the ocular sphere—they pivot around the cervical vertebrae (~$8\text{ cm}$ behind and ~$12\text{ cm}$ below the eyes). An integrated kinematic model replicates natural ocular displacement, preventing disorientation and near-plane clipping.
+
+### 6. Smart Interface & Dialogue Protection
+* **Automatic Menu Pause:** Suspends head tracking and resets projection shear when accessing inventory, crafting stations, or terminal interfaces, preventing mouse cursor disruption.
+* **Cutscene / Dialogue Lock:** Respects engine look-input locks during NPC dialogues and scripted sequences.
+
+### 7. Universal Tracker Support (Hardware Agnostic)
+Connects directly via high-speed **FreeTrack 2.0 Shared Memory (`FT_SharedMem`)** with mutex synchronization and non-blocking **UDP (Port 4242)**:
+* **Standard Webcams:** Using OpenTrack's AI *neuralnet* face tracker.
+* **Smartphone Cameras:** Via DroidCam or FreePIE UDP streaming.
+* **Infrared Tracking Clips:** DelanClip, TrackHat, and DIY IR LEDs via *PointTracker*.
+* **Official TrackIR Hardware:** Seamless operation with TrackIR 4 / 5 and TrackClip Pro via `NPClient64`.
+* **Alternative Devices:** Tobii Eye Tracker, Aruco paper markers, and PS3 Eye.
+
+### 8. Standalone Diagnostic Bridge Tool
+Includes `AbioticTrackIR-Bridge.exe`, a standalone diagnostic utility that visualizes real-time rotation, translation, packet rates, and frustum calculations without needing to run the game.
 
 ---
 
@@ -43,67 +54,113 @@ By coupling your real-world eye coordinates with Unreal Engine 5's projection ma
 
 | Hotkey | Action | Description |
 | :--- | :--- | :--- |
-| **F12** | **Recenter / Calibrate** | Immediately zeroes current head posture as the center forward view. |
-| **F11** | **Toggle Tracking** | Toggles head tracking on or off on the fly. |
+| **F12** | **Recenter View** | Instantly zeroes current head posture as the center forward view. |
+| **F11** | **Toggle Tracking** | Enables or disables head tracking on the fly. |
 | **F10** | **Toggle Parallax 3D** | Toggles off-axis asymmetrical perspective frustum. |
-| **Left Alt** | **Free-Look** | Hold to look around freely decoupled from your character's body. |
+| **Left Alt** | **Free-Look** | Hold to freely look around decoupled from character body heading. |
 
-*(All hotkeys are customizable in `AbioticTrackIR.ini`)*
+*(All hotkeys are fully customizable in `AbioticTrackIR.ini`)*
 
 ---
 
 ## 🚀 Quick Setup with OpenTrack
 
-1. **Launch OpenTrack** (installed on your PC).
-2. Set **Input** to your preferred tracker (e.g., *neuralnet* for webcam, or *PointTracker* for IR clip).
+1. **Launch OpenTrack** on your computer.
+2. Select your preferred **Input** device:
+   * *neuralnet* (recommended for standard webcams without markers/clips)
+   * *PointTracker* (for 3-point IR clips or caps)
 3. Set **Output** to:
-   * **`freetrack 2.0 Enhanced`** (Recommended - uses high-speed direct memory mapping)
+   * **`freetrack 2.0 Enhanced`** (Recommended — lowest latency direct memory mapping)
    * OR **`UDP over network`** (Port: `4242`).
 4. Click **Start** in OpenTrack.
 5. Launch **Abiotic Factor**!
-6. Press **F12** while sitting comfortably to calibrate your center view.
+6. Sit comfortably in your natural playing posture and press **F12** to calibrate your center view.
 
 ---
 
-## 🛠️ Configuration (`AbioticTrackIR.ini`)
+## 📥 Installation
 
-Located in the game directory or mod directory:
+### Method A: Mod.io (Recommended)
+1. Subscribe to **AbioticTrackIR** on the official [Abiotic Factor Mod.io](https://mod.io/g/abiotic-factor) page.
+2. The game will automatically download and unpack the mod into your game files.
+3. Run the game with OpenTrack running in the background.
+
+### Method B: Manual Drop-In
+1. Download the latest release package.
+2. Copy the following files into your game's 64-bit binary directory:
+   ```text
+   <Game Installation Directory>\AbioticFactor\Binaries\Win64\
+   ├── version.dll                (Zero-dependency proxy hook)
+   ├── AbioticTrackIR.ini         (Configuration settings)
+   └── AbioticTrackIR-Bridge.exe  (Standalone diagnostic tool)
+   ```
+3. Launch **Abiotic Factor** directly via Steam or shortcut.
+
+---
+
+## 🛠️ Configuration Guide (`AbioticTrackIR.ini`)
+
+`AbioticTrackIR.ini` resides in the same directory as `version.dll` and can be adjusted at any time:
 
 ```ini
+; =====================================================================
+; Abiotic Factor - TrackIR & OpenTrack 6-DOF + Parallax 3D Mod Config
+; =====================================================================
+
 [General]
-Enabled = true
-UdpPort = 4242
+Enabled = true             ; Master switch for head tracking
+AimCoupled = false         ; false = Decoupled view; true = Head steers weapon crosshair
+PauseInMenus = true        ; Suspends tracking while inventory/crafting cursor is visible
+UdpPort = 4242             ; OpenTrack UDP port (when UDP mode is used)
 
 [Sensitivity]
-Yaw = 1.0
-Pitch = 1.0
-Roll = 0.8
-X = 1.0
-Y = 1.0
-Z = 1.0
+Yaw = 1.0                  ; Horizontal look sensitivity
+Pitch = 1.0                ; Vertical look sensitivity
+Roll = 0.8                 ; Head tilt sensitivity
+X = 1.0                    ; Lateral lean sensitivity
+Y = 1.0                    ; Forward / backward depth sensitivity
+Z = 1.0                    ; Vertical elevation sensitivity
+ScaleSensWithFOV = true    ; Dynamically damps sensitivity when aiming down sights (ADS)
+
+[Limits]
+; Safety translation limits in centimeters to prevent clipping through level geometry
+MaxTranslationX_Cm = 25.0
+MaxTranslationY_Cm = 30.0
+MaxTranslationZ_Cm = 25.0
+
+[Inversion]
+InvertYaw = false
+InvertPitch = false
+InvertRoll = false
+InvertX = false
+InvertY = false
+InvertZ = false
 
 [Smoothing]
-Factor = 0.35             ; 0.0 = raw, 0.7 = heavy smoothing
-DeadzoneDegrees = 0.1     ; Eliminates micro-tremors when resting head
+; Factor: 0.0 = raw / instantaneous, 0.7 = heavy smoothing
+Factor = 0.35
+DeadzoneDegrees = 0.1      ; Eliminates micro-tremors when resting head
 DeadzoneTransCm = 0.05
 
 [NeckModel]
-Enabled = true
-PivotForwardCm = -8.0
-PivotUpCm = -12.0
+Enabled = true             ; Anatomical neck rotation displacement
+PivotForwardCm = -8.0      ; Cervical joint offset behind eyes
+PivotUpCm = -12.0          ; Cervical joint offset below eyes
 
 [Parallax3D]
+; Off-axis perspective projection for depth illusion
 Enabled = true
-; Monitor width & height in cm (measure screen panel):
-; 24" = 53.1 x 29.9 | 27" = 59.7 x 33.6 | 32" = 69.8 x 39.3 | 34" UW = 79.8 x 33.4
+; Monitor display dimensions in centimeters (measure physical panel width & height):
+; 24": 53.1 x 29.9 | 27": 59.7 x 33.6 | 32": 69.8 x 39.3 | 34" UW: 79.8 x 33.4
 MonitorWidthCm = 59.7
 MonitorHeightCm = 33.6
-ViewingDistanceCm = 65.0
-Intensity = 1.0
-DynamicFOV = true
-MaxOffsetFrustum = 0.85
+ViewingDistanceCm = 65.0   ; Normal distance from eyes to screen
+Intensity = 1.0            ; Frustum shear intensity multiplier
+DynamicFOV = true          ; Naturally expands FOV when leaning closer
+MaxOffsetFrustum = 0.85    ; Edge distortion safety clamp
 
 [Hotkeys]
+; Available keys: VK_F1..VK_F12, LeftAlt, LeftCtrl, LeftShift, MiddleMouse, Mouse4, Mouse5
 Center = VK_F12
 ToggleTracking = VK_F11
 ToggleParallax = VK_F10
@@ -112,10 +169,15 @@ Freelook = VK_LMENU
 
 ---
 
-## 📦 Publishing to Mod.io
+## 🔒 Privacy & Safety Guarantee
 
-1. Zip the contents of the `ModIO_Package` directory into `AbioticTrackIR.zip`.
-2. Ensure `AbioticTrackIR.uplugin` is at the root level of the ZIP file.
-3. Go to [https://mod.io/g/abiotic-factor](https://mod.io/g/abiotic-factor).
-4. Click **Add Mod**, enter title: `AbioticTrackIR - 6-DOF Head Tracking & Parallax 3D`.
-5. Upload `AbioticTrackIR.zip` and publish!
+* **100% Offline & Client-Side:** Operates strictly on local shared memory and local loopback UDP (`127.0.0.1`).
+* **Zero Telemetry:** No external network requests, analytics, or remote data collection of any kind.
+* **Non-Destructive Hooking:** Implemented via standard Windows `version.dll` export forwarding without modifying the game executable or patching game PAK files on disk.
+* **Clean Uninstallation:** Simply remove `version.dll`, `AbioticTrackIR.ini`, and `AbioticTrackIR-Bridge.exe` from your binary folder to restore the game to its unmodified state.
+
+---
+
+## 📜 License & Credits
+
+Distributed under the MIT License. Built for the community with compatibility for [OpenTrack](https://github.com/opentrack/opentrack) and official TrackIR protocols.
