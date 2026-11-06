@@ -1,0 +1,14 @@
+{
+  "name": "AbioticTrackIR - 6-DOF Head Tracking & Parallax 3D",
+  "name_id": "abiotic-trackir",
+  "summary": "Full 6-DOF TrackIR & OpenTrack head tracking with biomechanical neck pivot, aim decoupling, and holographic Parallax 3D depth illusion.",
+  "version": "1.0.0",
+  "tags": [
+    "Quality of Life",
+    "Gameplay",
+    "Input",
+    "Client"
+  ],
+  "homepage_url": "https://mod.io/g/abiotic-factor",
+  "metadata_blob": "AbioticTrackIR_v1.0.0"
+}

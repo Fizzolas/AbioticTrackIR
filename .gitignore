@@ -1,0 +1,41 @@
+# Visual Studio / MSBuild
+.vs/
+out/
+build/
+x64/
+x86/
+Debug/
+Release/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# C++ Build outputs & intermediates
+*.obj
+*.ilk
+*.pdb
+*.tlog
+*.idb
+*.lastbuildstate
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Windows system files
+[Dd]esktop.ini
+[Tt]humbs.db
+$RECYCLE.BIN/
+
+# Temporary / Editor files
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store

@@ -1,0 +1,17 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"FriendlyName": "AbioticTrackIR - 6-DOF Head Tracking & Parallax 3D",
+	"Description": "Comprehensive 6-DOF Head Tracking for Abiotic Factor supporting OpenTrack & official TrackIR hardware. Includes cervical neck pivot model, aim decoupling / freelook, and holographic Parallax 3D off-axis projection.",
+	"Category": "Input",
+	"CreatedBy": "OpenTrack Community",
+	"CreatedByURL": "https://github.com/opentrack/opentrack",
+	"DocsURL": "https://mod.io/g/abiotic-factor",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": true
+}

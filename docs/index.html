@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AbioticTrackIR - 6-DOF Head Tracking & Parallax 3D for Abiotic Factor</title>
+  <meta name="description" content="Full Six Degrees of Freedom (6-DOF) head tracking and off-axis Parallax 3D perspective mod for Abiotic Factor using OpenTrack or TrackIR.">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --accent: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.2);
+      --text: #c9d1d9;
+      --text-bright: #f0f6fc;
+      --text-muted: #8b949e;
+      --code-bg: #090d13;
+      --success: #3fb950;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding: 0 1rem;
+    }
+
+    header {
+      max-width: 960px;
+      margin: 3rem auto 2rem;
+      text-align: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent-glow);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: var(--text-bright);
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 750px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent);
+      color: #0d1117;
+      font-weight: 600;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover { opacity: 0.9; }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text-bright);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background: #21262d;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto 4rem;
+    }
+
+    section {
+      margin-top: 3rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      color: var(--text-bright);
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      background: #1c2128;
+      color: var(--text-bright);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    kbd {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      box-shadow: inset 0 -1px 0 #30363d;
+      color: #c9d1d9;
+      display: inline-block;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 0.2rem 0.5rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.9rem;
+      color: #79c0ff;
+    }
+
+    ol {
+      margin-left: 1.5rem;
+      margin-top: 0.75rem;
+    }
+
+    ol li {
+      margin-bottom: 0.5rem;
+    }
+
+    footer {
+      max-width: 960px;
+      margin: 4rem auto 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Unreal Engine 5 Mod</div>
+    <h1>AbioticTrackIR</h1>
+    <p class="subtitle">
+      6-DOF Head Tracking &amp; Off-Axis Parallax 3D Perspective Mod for <strong>Abiotic Factor</strong>. Turn your monitor into a holographic glass window into GATE Cascade!
+    </p>
+    <div class="btn-group">
+      <a href="https://github.com/Fizzolas" class="btn btn-secondary">GitHub Profile</a>
+      <a href="#setup" class="btn">Quick Setup Guide</a>
+    </div>
+  </header>
+
+  <main>
+    <section id="features">
+      <h2>🌟 Key Features</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Full 6-DOF Freedom</h3>
+          <p>Full 3-axis rotation (Pitch, Yaw, Roll) and 3-axis translation (Lateral lean, Surge depth, Heave height).</p>
+        </div>
+        <div class="card">
+          <h3>Parallax 3D Frustum</h3>
+          <p>Dynamically computes asymmetrical off-axis projection frustums coupled to your physical head position on normal 2D monitors.</p>
+        </div>
+        <div class="card">
+          <h3>OpenTrack &amp; TrackIR</h3>
+          <p>High-speed shared memory (FT_SharedMem) &amp; non-blocking UDP (Port 4242). Supports webcams, phone cams, IR clips, and TrackIR 4/5.</p>
+        </div>
+        <div class="card">
+          <h3>Cervical Neck Model</h3>
+          <p>Anthropomorphic neck pivot offsets eye rotation around the spine, eliminating clipping and motion fatigue.</p>
+        </div>
+        <div class="card">
+          <h3>Decoupled Free-Look</h3>
+          <p>Hold Left Alt to look around freely 360° while maintaining body motion and tool orientation.</p>
+        </div>
+        <div class="card">
+          <h3>Plug &amp; Play Proxy</h3>
+          <p>Direct version.dll proxy hooking without patching game executables or modifying core game archives.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="hotkeys">
+      <h2>🎮 Default Hotkeys</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Hotkey</th>
+            <th>Action</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>F12</kbd></td>
+            <td><strong>Recenter View</strong></td>
+            <td>Zeroes current head position as the center forward view.</td>
+          </tr>
+          <tr>
+            <td><kbd>F11</kbd></td>
+            <td><strong>Toggle Tracking</strong></td>
+            <td>Enable or disable head tracking instantly.</td>
+          </tr>
+          <tr>
+            <td><kbd>F10</kbd></td>
+            <td><strong>Toggle Parallax 3D</strong></td>
+            <td>Toggle off-axis asymmetrical perspective frustum.</td>
+          </tr>
+          <tr>
+            <td><kbd>Left Alt</kbd></td>
+            <td><strong>Free-Look</strong></td>
+            <td>Hold to look freely decoupled from character body.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="setup">
+      <h2>🚀 Quick Setup with OpenTrack</h2>
+      <ol>
+        <li>Start <strong>OpenTrack</strong> on your PC.</li>
+        <li>Choose your tracker input (e.g. <em>neuralnet</em> for webcam, or <em>PointTracker</em> for IR LEDs).</li>
+        <li>Set Output to <strong><code>freetrack 2.0 Enhanced</code></strong> (Recommended) or <strong><code>UDP over network</code> (Port 4242)</strong>.</li>
+        <li>Click <strong>Start</strong> in OpenTrack.</li>
+        <li>Launch <strong>Abiotic Factor</strong> and press <kbd>F12</kbd> to calibrate!</li>
+      </ol>
+    </section>
+
+    <section id="config">
+      <h2>⚙️ Configuration Preview (<code>AbioticTrackIR.ini</code>)</h2>
+      <pre><code>[General]
+Enabled = true
+UdpPort = 4242
+
+[Sensitivity]
+Yaw = 1.0
+Pitch = 1.0
+Roll = 0.8
+X = 1.0
+Y = 1.0
+Z = 1.0
+
+[Parallax3D]
+Enabled = true
+MonitorWidthCm = 59.7
+MonitorHeightCm = 33.6
+ViewingDistanceCm = 65.0
+Intensity = 1.0
+DynamicFOV = true</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>Maintained by <a href="https://github.com/Fizzolas" style="color: var(--accent);">Fizzolas</a>. Published via GitHub Pages.</p>
+  </footer>
+
+</body>
+</html>
