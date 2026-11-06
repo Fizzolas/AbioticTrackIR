@@ -168,10 +168,13 @@ bool TrackingReceiver::PollSharedMemory(RawTrackingPose& outPose)
     // snapshot.Yaw   = -mappedYaw   * (PI / 180.0)
     // snapshot.Pitch = -mappedPitch * (PI / 180.0)
     // snapshot.Roll  = +mappedRoll  * (PI / 180.0)
-    // Therefore, snapshot.Yaw and snapshot.Pitch must both be negated to restore positive 1:1 rotation:
+    // In Unreal Engine's left-handed coordinate system (+X Forward, +Y Right, +Z Up):
+    // Positive roll around +X rotates the camera counter-clockwise (tilting left).
+    // Therefore, all three rotational axes (Yaw, Pitch, Roll) must be negated to achieve
+    // true 1:1 natural movement:
     outPose.Yaw   = -RAD_TO_DEG(snapshot.Yaw);
     outPose.Pitch = -RAD_TO_DEG(snapshot.Pitch);
-    outPose.Roll  =  RAD_TO_DEG(snapshot.Roll);
+    outPose.Roll  = -RAD_TO_DEG(snapshot.Roll);
 
     // FreeTrack translations are in millimeters; convert to centimeters
     outPose.X = snapshot.X * 0.1;
@@ -219,7 +222,7 @@ bool TrackingReceiver::PollUDP(RawTrackingPose& outPose)
         outPose.Z     = buffer[2];
         outPose.Yaw   =  buffer[3];
         outPose.Pitch = -buffer[4];
-        outPose.Roll  =  buffer[5];
+        outPose.Roll  = -buffer[5];
         outPose.IsValid = true;
         outPose.FrameId = ++m_udpFrameId;
         return true;
