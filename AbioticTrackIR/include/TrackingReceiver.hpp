@@ -83,16 +83,18 @@ private:
 
     // Shared Memory handle
     HANDLE m_hSharedMem{NULL};
+    HANDLE m_hMutex{NULL};
     FTData* m_pFTData{nullptr};
     int32_t m_lastDataId{-1};
-    int m_staleCount{0};
 
-    // UDP socket
+    // UDP socket & frame tracking
     uintptr_t m_udpSocket{static_cast<uintptr_t>(~0)}; // INVALID_SOCKET
+    uint32_t m_udpFrameId{0};
 
-    // Telemetry
+    // Telemetry & timeout
     std::atomic<TrackingSource> m_activeSource{TrackingSource::None};
     RawTrackingPose m_latestPose;
+    std::chrono::steady_clock::time_point m_lastPacketTime{};
     std::atomic<uint32_t> m_fpsCounter{0};
     std::atomic<uint32_t> m_currentFPS{0};
     double m_lastFpsTime{0.0};

@@ -16,7 +16,24 @@ static HANDLE           g_initThread = NULL;
 
 static void LogMessage(const std::string& msg)
 {
-    std::ofstream log("AbioticTrackIR.log", std::ios::app);
+    static std::string s_logPath;
+    if (s_logPath.empty())
+    {
+        char exePath[MAX_PATH];
+        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        std::string p(exePath);
+        size_t lastSlash = p.find_last_of("\\/");
+        if (lastSlash != std::string::npos)
+        {
+            s_logPath = p.substr(0, lastSlash + 1) + "AbioticTrackIR.log";
+        }
+        else
+        {
+            s_logPath = "AbioticTrackIR.log";
+        }
+    }
+
+    std::ofstream log(s_logPath, std::ios::app);
     if (log.is_open())
     {
         auto now = std::chrono::system_clock::now();

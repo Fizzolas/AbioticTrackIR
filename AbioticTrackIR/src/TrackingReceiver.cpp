@@ -60,6 +60,11 @@ void TrackingReceiver::Stop()
         CloseHandle(m_hSharedMem);
         m_hSharedMem = NULL;
     }
+    if (m_hMutex)
+    {
+        CloseHandle(m_hMutex);
+        m_hMutex = NULL;
+    }
 
     WSACleanup();
 }
@@ -116,6 +121,11 @@ bool TrackingReceiver::PollSharedMemory(RawTrackingPose& outPose)
         }
     }
 
+    if (!m_hMutex)
+    {
+        m_hMutex = OpenMutexA(SYNCHRONIZE, FALSE, "FT_Mutext");
+    }
+
     if (!m_pFTData) return false;
 
     int32_t currentId = m_pFTData->DataID;
@@ -123,23 +133,14 @@ bool TrackingReceiver::PollSharedMemory(RawTrackingPose& outPose)
     // Check if DataID has actually incremented
     if (currentId == m_lastDataId)
     {
-        m_staleCount++;
-        // If data hasn't updated for > 150 polls (~300ms), OpenTrack is paused or stopped
-        if (m_staleCount > 150)
-        {
-            // Close view so we can reconnect if OpenTrack re-creates mapping
-            UnmapViewOfFile(m_pFTData);
-            m_pFTData = nullptr;
-            if (m_hSharedMem)
-            {
-                CloseHandle(m_hSharedMem);
-                m_hSharedMem = NULL;
-            }
-            m_staleCount = 0;
-            return false;
-        }
-        // Frame is not new
         return false;
+    }
+
+    // Inter-process synchronization with OpenTrack / FreeTrack server (matching freetrackclient64.dll)
+    DWORD waitRes = WAIT_FAILED;
+    if (m_hMutex)
+    {
+        waitRes = WaitForSingleObject(m_hMutex, 5); // 5ms non-blocking lock
     }
 
     // Double-checked seqlock copy for torn-frame protection against concurrent OpenTrack writes
@@ -148,6 +149,11 @@ bool TrackingReceiver::PollSharedMemory(RawTrackingPose& outPose)
     memcpy(&snapshot, (const void*)m_pFTData, sizeof(FTData));
     int32_t idAfter = m_pFTData->DataID;
 
+    if (waitRes == WAIT_OBJECT_0)
+    {
+        ReleaseMutex(m_hMutex);
+    }
+
     if (idBefore != idAfter)
     {
         // OpenTrack updated memory during copy; ignore torn frame and poll next cycle
@@ -155,13 +161,18 @@ bool TrackingReceiver::PollSharedMemory(RawTrackingPose& outPose)
     }
 
     // New valid frame received
-    m_staleCount = 0;
     outPose.FrameId = (uint32_t)idBefore;
     
-    // FreeTrack rotations are in radians; convert to degrees
-    outPose.Yaw   = RAD_TO_DEG(snapshot.Yaw);
-    outPose.Pitch = RAD_TO_DEG(snapshot.Pitch);
-    outPose.Roll  = RAD_TO_DEG(snapshot.Roll);
+    // In FreeTrack 2.0 / TrackIR protocol:
+    // OpenTrack writes Yaw * (-pi/180) and Pitch * (-pi/180) to shared memory.
+    // We negate Yaw and Pitch here so that:
+    // Yaw > 0 is turning RIGHT
+    // Pitch > 0 is looking UP
+    // Roll > 0 is tilting RIGHT
+    // Matching OpenTrack's internal coordinate frame and UDP protocol output!
+    outPose.Yaw   = -RAD_TO_DEG(snapshot.Yaw);
+    outPose.Pitch = -RAD_TO_DEG(snapshot.Pitch);
+    outPose.Roll  =  RAD_TO_DEG(snapshot.Roll);
 
     // FreeTrack translations are in millimeters; convert to centimeters
     outPose.X = snapshot.X * 0.1;
@@ -183,7 +194,6 @@ bool TrackingReceiver::PollUDP(RawTrackingPose& outPose)
     sockaddr_in clientAddr{};
     int clientLen = sizeof(clientAddr);
 
-    int bytesReceived = 0;
     int latestBytes = 0;
 
     // Drain socket buffer to get the absolute newest packet
@@ -212,7 +222,7 @@ bool TrackingReceiver::PollUDP(RawTrackingPose& outPose)
         outPose.Pitch = buffer[4];
         outPose.Roll  = buffer[5];
         outPose.IsValid = true;
-        outPose.FrameId++;
+        outPose.FrameId = ++m_udpFrameId;
         return true;
     }
 
@@ -263,6 +273,7 @@ void TrackingReceiver::ReceiverLoop()
 
         if (gotData)
         {
+            m_lastPacketTime = now;
             pose.TimestampSec = std::chrono::duration<double>(now.time_since_epoch()).count();
             {
                 std::lock_guard<std::mutex> lock(m_mutex);
@@ -270,6 +281,18 @@ void TrackingReceiver::ReceiverLoop()
             }
             m_activeSource.store(source);
             packetCount++;
+        }
+        else
+        {
+            // Immediate timeout check: if > 250ms since last valid packet, stream is paused/disconnected
+            double silenceSec = std::chrono::duration<double>(now - m_lastPacketTime).count();
+            if (silenceSec > 0.25 && m_activeSource.load() != TrackingSource::None)
+            {
+                m_activeSource.store(TrackingSource::None);
+                m_currentFPS.store(0);
+                std::lock_guard<std::mutex> lock(m_mutex);
+                m_latestPose.IsValid = false;
+            }
         }
 
         if (elapsedSec >= 1.0)

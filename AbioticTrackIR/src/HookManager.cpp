@@ -262,6 +262,7 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
         m_centerKeyWasDown = false;
         m_trackingKeyWasDown = false;
         m_parallaxKeyWasDown = false;
+        m_engine->SetFreelook(false); // Clear freelook on Alt-Tab focus loss
     }
 
     // Check if player is interacting with inventory, crafting, or terminal menus
@@ -298,10 +299,14 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
     double baseYaw = cacheValid ? povCache->Rotation.Yaw : povVT->Rotation.Yaw;
 
     // Aim coupling vs Decoupled View:
-    // If AimCoupled is active and not in free-look, head tracking steers ControlRotation (crosshair)
-    // via framerate-independent deltas, and camera Pitch/Yaw is driven through the character pawn.
+    // If AimCoupled is active, player is alive (valid Pawn), and look input is not ignored by the game,
+    // head tracking steers ControlRotation via deltas; otherwise, camera is decoupled or standard.
     bool applyCamRotation = true;
-    if (config.AimCoupled && !state.IsFreelookActive && pcPtr)
+    uintptr_t pawnPtr = pcPtr ? *(uintptr_t*)(pcPtr + 0x2d8) : 0;
+    bool hasPawn = (pawnPtr >= 0x10000 && pawnPtr <= 0x00007FFFFFFFFFFFULL);
+    uint8_t ignoreLook = pcPtr ? *(uint8_t*)(pcPtr + 0x32a) : 0;
+
+    if (config.AimCoupled && !state.IsFreelookActive && pcPtr && hasPawn && ignoreLook == 0)
     {
         applyCamRotation = false; // Pawn control rotation directly drives camera pitch & yaw
 
@@ -324,6 +329,18 @@ void HookManager::HandlePostUpdate(void* thisCameraManager, float deltaTime)
 
                 pControlRot->Pitch = std::clamp(FRotator3d::NormalizeAxis(pControlRot->Pitch + deltaPitch), -89.0, 89.0);
                 pControlRot->Yaw   = FRotator3d::NormalizeAxis(pControlRot->Yaw + deltaYaw);
+
+                // Zero-latency instant camera alignment for current rendering frame
+                if (cacheValid)
+                {
+                    povCache->Rotation.Pitch = std::clamp(FRotator3d::NormalizeAxis(povCache->Rotation.Pitch + deltaPitch), -89.0, 89.0);
+                    povCache->Rotation.Yaw   = FRotator3d::NormalizeAxis(povCache->Rotation.Yaw + deltaYaw);
+                }
+                if (vtValid)
+                {
+                    povVT->Rotation.Pitch = std::clamp(FRotator3d::NormalizeAxis(povVT->Rotation.Pitch + deltaPitch), -89.0, 89.0);
+                    povVT->Rotation.Yaw   = FRotator3d::NormalizeAxis(povVT->Rotation.Yaw + deltaYaw);
+                }
             }
         }
     }

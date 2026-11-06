@@ -84,16 +84,21 @@ ProcessedTrackingState TrackingEngine::Process(const RawTrackingPose& rawPose, f
 
     if (!rawPose.IsValid || !m_config.Enabled)
     {
+        m_streamWasLost = true;
         return state;
     }
 
-    // 1. Recenter baseline capture (instant zero-calibration)
-    if (!m_hasCenter)
+    // 1. Recenter baseline capture (instant zero-calibration or stream recovery)
+    if (!m_hasCenter || m_streamWasLost)
     {
-        m_centerOffset = rawPose;
+        if (!m_hasCenter)
+        {
+            m_centerOffset = rawPose;
+            m_hasCenter = true;
+        }
         m_filteredPose = RawTrackingPose{}; // Cleanly reset smoothed pose to zero
         m_filteredPose.IsValid = true;
-        m_hasCenter = true;
+        m_streamWasLost = false;
     }
 
     // 2. Subtract center offset and normalize angular deltas

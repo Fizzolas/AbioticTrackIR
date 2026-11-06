@@ -94,6 +94,7 @@ private:
 
     // Calibration offsets
     bool m_hasCenter{false};
+    bool m_streamWasLost{true};
     RawTrackingPose m_centerOffset{};
 
     // Smoothing states
