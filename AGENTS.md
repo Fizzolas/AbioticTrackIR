@@ -12,6 +12,10 @@ Welcome to the **AbioticTrackIR / TrackOpen** repository. This document specifie
 * **Git Credential Helper:** Windows Credential Manager (`manager`) is globally configured with authenticated HTTPS credentials for user `Fizzolas`.
 * **Non-Interactive Execution:** Do not prompt the user for credentials or run interactive authentication wizards. Git over HTTPS pushes seamlessly.
 * `push.autoSetupRemote` is enabled globally, so standard `git push` automatically tracks upstream branches without needing `-u origin <branch>`.
+* **Autonomous Repo Creation (GitHub CLI):** `gh` is installed in the user PATH (`AppData\Local\Microsoft\GitHubCLI\bin`). If creating a brand-new repository from scratch, models can execute:
+  ```bash
+  gh repo create <repo-name> --public --source=. --remote=origin --push
+  ```
 
 ### 2. Standard Commit & Push Workflow
 When completing a feature, bugfix, or update:
