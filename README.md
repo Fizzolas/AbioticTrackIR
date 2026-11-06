@@ -143,21 +143,23 @@ DeadzoneDegrees = 0.1      ; Eliminates micro-tremors when resting head
 DeadzoneTransCm = 0.05
 
 [NeckModel]
-Enabled = true             ; Anatomical neck rotation displacement
-PivotForwardCm = -8.0      ; Cervical joint offset behind eyes
-PivotUpCm = -12.0          ; Cervical joint offset below eyes
+; Simulates cervical neck pivot (disabled by default in FPS games to prevent camera clipping inside player mesh)
+Enabled = false
+PivotForwardCm = -1.5
+PivotUpCm = -2.0
 
 [Parallax3D]
-; Off-axis perspective projection for depth illusion
-Enabled = true
+; Off-axis perspective projection for depth illusion (disabled by default for comfortable, nausea-free play)
+; Can be toggled on/off in-game anytime by pressing F10
+Enabled = false
 ; Monitor display dimensions in centimeters (measure physical panel width & height):
 ; 24": 53.1 x 29.9 | 27": 59.7 x 33.6 | 32": 69.8 x 39.3 | 34" UW: 79.8 x 33.4
 MonitorWidthCm = 59.7
 MonitorHeightCm = 33.6
 ViewingDistanceCm = 65.0   ; Normal distance from eyes to screen
-Intensity = 1.0            ; Frustum shear intensity multiplier
-DynamicFOV = true          ; Naturally expands FOV when leaning closer
-MaxOffsetFrustum = 0.85    ; Edge distortion safety clamp
+Intensity = 0.10           ; Subtle frustum shear intensity (calibrated to eliminate motion sickness)
+DynamicFOV = false         ; Disabled by default to prevent disorienting dolly-zoom vertigo
+MaxOffsetFrustum = 0.15    ; Edge distortion safety clamp
 
 [Hotkeys]
 ; Available keys: VK_F1..VK_F12, LeftAlt, LeftCtrl, LeftShift, MiddleMouse, Mouse4, Mouse5

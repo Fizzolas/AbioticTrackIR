@@ -70,6 +70,11 @@ FVector3d TrackingEngine::ComputeNeckDisplacement(double pitchDeg, double yawDeg
     double dispY = dx * std::sin(y);
     double dispZ = dx * std::sin(p) + dz * (std::cos(p) - 1.0);
 
+    // Safety bounds to prevent camera from ever penetrating player character mesh
+    dispX = std::clamp(dispX, -1.5, 1.5);
+    dispY = std::clamp(dispY, -1.5, 1.5);
+    dispZ = std::clamp(dispZ, -1.5, 1.5);
+
     return {dispX, dispY, dispZ};
 }
 

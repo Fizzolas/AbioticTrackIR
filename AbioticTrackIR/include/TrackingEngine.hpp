@@ -8,7 +8,7 @@ struct TrackingConfig
 {
     // Enable toggles
     bool Enabled{true};
-    bool Parallax3DEnabled{true};
+    bool Parallax3DEnabled{false}; // Disabled by default to prevent nausea and projection warping
     bool DecoupledFreelookActive{false};
     bool AimCoupled{false}; // If true, head tracking also steers character crosshair/aim
     bool PauseInMenus{true}; // Pause head-look while inventory/crafting mouse cursor is visible
@@ -40,10 +40,10 @@ struct TrackingConfig
     double DeadzoneDegrees{0.1};
     double DeadzoneTransCm{0.05};
 
-    // Neck model (cm)
-    bool UseNeckModel{true};
-    double NeckPivotForwardCm{-8.0};
-    double NeckPivotUpCm{-12.0};
+    // Neck model (cm) - Disabled by default to prevent camera clipping inside player mesh
+    bool UseNeckModel{false};
+    double NeckPivotForwardCm{-1.5};
+    double NeckPivotUpCm{-2.0};
 
     // Monitor & Parallax setup
     MonitorConfig Monitor{};
