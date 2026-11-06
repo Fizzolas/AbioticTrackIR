@@ -8,7 +8,7 @@ Welcome to the **AbioticTrackIR / TrackOpen** repository. This document specifie
 
 ### 1. Default Branch & Remote
 * **Default Branch:** `main`
-* **Remote:** `origin` (`https://github.com/Fizzolas/<repo-name>.git`)
+* **Remote:** `origin` (`https://github.com/Fizzolas/AbioticTrackIR.git`)
 * **Git Credential Helper:** Windows Credential Manager (`manager`) is globally configured with authenticated HTTPS credentials for user `Fizzolas`.
 * **Non-Interactive Execution:** Do not prompt the user for credentials or run interactive authentication wizards. Git over HTTPS pushes seamlessly.
 * `push.autoSetupRemote` is enabled globally, so standard `git push` automatically tracks upstream branches without needing `-u origin <branch>`.
